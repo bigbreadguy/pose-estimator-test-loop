@@ -1,2 +1,2 @@
-# equipment-pose-estimator
+# Equipment Pose Estimator Test Loop
  
