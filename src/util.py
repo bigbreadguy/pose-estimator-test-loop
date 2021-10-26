@@ -52,19 +52,19 @@ def init_weights(net, init_type='normal', init_gain=0.02):
     print('initialize network with %s' % init_type)
     net.apply(init_func)  # apply the initialization function <init_func>
 
-def save(ckpt_dir, epoch, netP_a, netP_b, optimP):
+def save(ckpt_dir, epoch, netP, optimP):
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
     
-    torch.save({'netP_a': netP_a.state_dict(), 'netP_b': netP_b.state_dict(),
+    torch.save({'netP': netP.state_dict(),
                 'optimP': optimP.state_dict()},
             "%s/model_epoch%d.pth" % (ckpt_dir, epoch))
 
-def load(ckpt_dir, netP_a, netP_b, optimP):
+def load(ckpt_dir, netP, optimP):
     if not os.path.exists(ckpt_dir):
         epoch = 0
         
-        return epoch, netP_a, netP_b, optimP
+        return epoch, netP, optimP
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -74,12 +74,11 @@ def load(ckpt_dir, netP_a, netP_b, optimP):
 
     dict_model = torch.load('%s/%s' % (ckpt_dir, ckpt_lst[-1]), map_location=device)
 
-    netP_a.load_state_dict(dict_model['netP_a'])
-    netP_b.load_state_dict(dict_model['netP_b'])
+    netP_a.load_state_dict(dict_model['netP'])
     optimP.load_state_dict(dict_model['optimP'])
     epoch = int(ckpt_lst[-1].split('epoch')[1].split('.pth')[0])
 
-    return epoch, netP_a, netP_b, optimP
+    return epoch, netP, optimP
 
 ## Add Sampling
 def add_sampling(img, type="random", opts=None):
