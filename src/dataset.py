@@ -1,5 +1,6 @@
 import os
 import glob
+import json
 import numpy as np
 
 import torch
@@ -11,8 +12,8 @@ from util import *
 ## Implement the DataLoader
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, transform=None, task=None, data_type='both'):
-        self.data_dir_a = data_dir + 'A'
-        self.data_dir_b = data_dir + 'B'
+        self.data_dir_i = data_dir + 'images'
+        # self.data_dir_l = data_dir + 'labels'
         self.transform = transform
         self.task = task
         self.data_type = data_type
@@ -20,59 +21,55 @@ class Dataset(torch.utils.data.Dataset):
         # Updated at Apr 5 2020
         self.to_tensor = ToTensor()
 
-        if os.path.exists(self.data_dir_a):
-            lst_data_a = os.listdir(self.data_dir_a)
-            lst_data_a = [f for f in lst_data_a if f.endswith('jpg') | f.endswith('jpeg') | f.endswith('png')]
-            lst_data_a.sort()
+        if os.path.exists(self.data_dir_i):
+            lst_data_i = os.listdir(self.data_dir_i)
+            lst_data_i = [f for f in lst_data_i if f.endswith('jpg') | f.endswith('jpeg') | f.endswith('png')]
+            lst_data_i.sort()
         else:
-            lst_data_a = []
+            lst_data_i = []
 
-        if os.path.exists(self.data_dir_b):
-            lst_data_b = os.listdir(self.data_dir_b)
-            lst_data_b = [f for f in lst_data_b if f.endswith('jpg') | f.endswith('jpeg') | f.endswith('png')]
-            lst_data_b.sort()
+        """
+        if os.path.exists(self.data_dir_l):
+            lst_data_l = os.listdir(self.data_dir_l)
+            for f in lst_data_l:
+                if f.endswith('json'):
+                    dir_data_l = f
+            
+            with open(os.path.join(self.data_dir_i, dir_data_l), "r") as json_obj:
+                dict_l = json.load(json_obj)
         else:
-            lst_data_b = []
+            dict_l = None
+        """
 
-        self.lst_data_a = lst_data_a
-        self.lst_data_b = lst_data_b
+        self.lst_data_i = lst_data_i
+        # self.dict_l = dict_l
 
     def __len__(self):
-        if self.data_type == 'both':
-            if len(self.lst_data_a) < len(self.lst_data_b):
-                return len(self.lst_data_a)
-            else:
-                return len(self.lst_data_b)
-        elif self.data_type == 'a':
-            return len(self.lst_data_a)
-        elif self.data_type == 'b':
-            return len(self.lst_data_b)
+        return len(self.lst_data_i)
 
     def __getitem__(self, index):
-
         data = {}
-        if self.data_type == 'a' or self.data_type == 'both':
-            data_a = plt.imread(os.path.join(self.data_dir_a, self.lst_data_a[index]))[:, :, :3]
+        if self.data_type == 'image' or self.data_type == 'both':
+            data_i = plt.imread(os.path.join(self.data_dir_i, self.lst_data_i[index]))[:, :, :3]
 
-            if data_a.ndim == 2:
-                data_a = data_a[:, :, np.newaxis]
-            if data_a.dtype == np.uint8:
-                data_a = data_a / 255.0
+            if data_i.ndim == 2:
+                data_i = data_i[:, :, np.newaxis]
+            if data_i.dtype == np.uint8:
+                data_i = data_i / 255.0
 
             # data = {'data_a': data_a}
-            data['data_a'] = data_a
+            # data['input'] = data_i
+            data = data_i
 
-        if self.data_type == 'b' or self.data_type == 'both':
-
-            data_b = plt.imread(os.path.join(self.data_dir_b, self.lst_data_b[index]))[:, :, :3]
-
-            if data_b.ndim == 2:
-                data_b = data_b[:, :, np.newaxis]
-            if data_b.dtype == np.uint8:
-                data_b = data_b / 255.0
+        """
+        if self.data_type == 'label' or self.data_type == 'both':
+            data_l = np.array(self.dict_l[index]["joints"])
+            
+            data_l = data_l / 255.0
 
             # data = {'data_b': data_b}
-            data['data_b'] = data_b
+            data['label'] = data_l
+        """
 
         if self.transform:
             data = self.transform(data)
