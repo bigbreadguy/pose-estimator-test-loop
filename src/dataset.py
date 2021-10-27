@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 
 import matplotlib.pyplot as plt
-from util import *
+from src.util import *
 
 ## Implement the DataLoader
 class Dataset(torch.utils.data.Dataset):

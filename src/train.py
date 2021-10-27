@@ -6,10 +6,10 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from loss import JointsMSELoss
-from model import *
-from dataset import *
-from util import *
+from src.loss import JointsMSELoss
+from src.model import *
+from src.dataset import *
+from src.util import *
 
 import itertools
 import matplotlib.pyplot as plt

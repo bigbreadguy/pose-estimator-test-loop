@@ -2,8 +2,8 @@ import os
 import json
 import tqdm
 
-from util import *
-from train import *
+from src.util import *
+from src.train import *
 
 class TestLoop(object):
     def __init__(self, opts):

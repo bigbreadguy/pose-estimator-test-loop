@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from layer import *
+from src.layer import *
 
 # Deep Residual Learning for Image Recognition
 # https://arxiv.org/abs/1512.03385
