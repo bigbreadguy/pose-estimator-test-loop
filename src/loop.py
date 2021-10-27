@@ -32,4 +32,9 @@ class TestLoop(object):
 
             setups_list = os.listdir(setups_dir)
             for idx_s, setups_list in enumerate(setups_list):
-                self.opts.
+                # Set arguments for training
+                self.opts.set_mode(mode="train")
+                self.opts.set_continue(train_continue="off")
+                base_epoch = self.opts.parse(args="--base_epoch").base_epoch
+                epoch_d = self.opts.parse(args="--base_epoch").epoch_d
+                epoch_steps = self.opts.parse(args="--base_epoch").epoch_steps
