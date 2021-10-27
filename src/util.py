@@ -1,4 +1,6 @@
 import os
+import argparse
+
 import numpy as np
 from scipy.stats import poisson
 from skimage.transform import rescale, resize
@@ -357,44 +359,11 @@ class opts():
         self.parser.add_argument("--joint_weight", default=False, type=bool, dest="joint_weight")
 
         self.parser.add_argument("--cuda", default="cuda", choices=["cuda", "cuda:0", "cuda:1"], type=str, dest="cuda")
-
-    def set_mode(self, mode : str = "train"):
-        self.mode = mode
     
-    def set_continue(self, train_continue : str = "off"):
-        self.train_continue = train_continue
-
-    def set_epoch(self, epoch : int):
-        self.num_epoch = epoch
-
-    def set_data_dir(self, dir : str):
-        self.data_dir = dir
-    
-    def set_report_dir(self, base_dir : str):
-        self.ckpt_dir = os.path.join(base_dir, "checkpoint")
-        self.log_dir = os.path.join(base_dir, "log")
-        self.result_dir = os.path.join(base_dir, "result")
-
-    def set_num_mark(self, num : int):
-        self.num_mark = int
-
     def parse(self, args = ""):
         if args == "":
             opt = self.parser.parse_args()
         else:
             opt = self.parser.parse_args(args)
-
-        return opt
-
-    def setup(self):
-        opt = self.parser.parse_args()
-        opt.mode = self.mode
-        opt.train_continue = self.train_continue
-        opt.num_epoch = self.num_epoch
-        opt.data_dir = self.data_dir
-        opt.ckpt_dir = self.ckpt_dir
-        opt.log_dir = self.log_dir
-        opt.result_dir = self.result_dir
-        opt.num_mark = self.num_mark
 
         return opt

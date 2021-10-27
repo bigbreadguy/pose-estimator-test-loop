@@ -63,7 +63,6 @@ def train(args):
     print("number of markers: %s" % num_mark)
 
     print("network: %s" % network)
-    print("learning type: %s" % learning_type)
 
     print("data dir: %s" % data_dir)
     print("ckpt dir: %s" % ckpt_dir)
@@ -81,7 +80,7 @@ def train(args):
     if mode == 'train':
         transform_train = transforms.Compose([Resize(shape=(286, 286, nch)),
                                               RandomCrop((ny, nx)),
-                                              RandomFlip((ny, nx)),
+                                              RandomFlip(),
                                               Normalization(mean=MEAN, std=STD)])
 
         dataset_train = Dataset(data_dir=os.path.join(data_dir, 'train'),
@@ -96,8 +95,8 @@ def train(args):
         num_data_train = len(dataset_train)
         num_batch_train = np.ceil(num_data_train / batch_size)
 
-    if network == "PoseResnet":
-        netP = PoseResNet(in_channels=nch, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
+    if network == "PoseResNet":
+        netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
         init_weights(netP, init_type='normal', init_gain=0.02)
     
     ## Define the Loss Functions
@@ -218,7 +217,6 @@ def test(args):
     print("number of markers: %s" % num_mark)
 
     print("network: %s" % network)
-    print("learning type: %s" % learning_type)
 
     print("data dir: %s" % data_dir)
     print("ckpt dir: %s" % ckpt_dir)
@@ -248,7 +246,7 @@ def test(args):
         num_data_test = len(dataset_test)
         num_batch_test = np.ceil(num_data_test / batch_size)
 
-    if network == "PoseResnet":
+    if network == "PoseResNet":
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
         init_weights(netP, init_type='normal', init_gain=0.02)
     

@@ -2,9 +2,9 @@ from src.util import *
 from src.loop import TestLoop
 
 if __name__ == "__main__":
-    opts = opts()
-    
-    loop = TestLoop(opts)
+    args = opts().parse()
+
+    loop = TestLoop(args)
     
     print("Building Test Loop")
     loop.build()

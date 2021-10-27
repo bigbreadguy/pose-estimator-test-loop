@@ -45,8 +45,6 @@ class PoseResNet(nn.Module):
     def __init__(self, in_channels, out_channels, nker=64, norm="bnorm", num_layers=50):
         super(PoseResNet, self).__init__()
 
-        self.learning_type = learning_type
-
         self.enc = CBR2d(in_channels, nker, kernel_size=3, stride=1, padding=1, bias=True, norm=None, relu=0.0)
 
         arch_settings = {

@@ -6,8 +6,9 @@ from src.util import *
 from src.train import *
 
 class TestLoop(object):
-    def __init__(self, opts):
-      self.opts = opts
+    def __init__(self, args):
+      self.args = args
+      self.vars = vars(args)
 
     def build(self):
         cwd = os.getcwd()
@@ -35,49 +36,45 @@ class TestLoop(object):
             setups_list = os.listdir(setups_dir)
             for idx_s, setup in enumerate(setups_list):
                 # Set arguments for training
-                self.opts.set_mode(mode="train")
-                self.opts.set_continue(train_continue="off")
+                self.vars["mode"] = "train"
+                self.vars["train_continue"] = "off"
 
-                train_data_dir = os.path.join(setups_dir, setup, "train")
+                train_data_dir = os.path.join(setups_dir, setup)
                 if not os.path.exists(train_data_dir):
                     os.makedirs(train_data_dir)
-                self.opts.set_data_dir(dir=train_data_dir)
+                self.vars["data_dir"] = train_data_dir
 
-                with open(os.path.join(train_data_dir, "labels", "mpii_style.json"), "r", encoding="utf-8") as fread:
+                with open(os.path.join(train_data_dir, "train", "labels", "mpii_style.json"), "r", encoding="utf-8") as fread:
                     labels_dict = json.load(fread)
                     num_mark = len(labels_dict[0]["joints_vis"])
-                self.opts.set_num_mark(num=num_mark)
+                self.vars["num_mark"] = num_mark
 
-                base_epoch = self.opts.parse(args="--base_epoch").base_epoch
-                epoch_d = self.opts.parse(args="--epoch_d").epoch_d
-                epoch_steps = self.opts.parse(args="--epoch_steps").epoch_steps
+                base_epoch = self.args.base_epoch
+                epoch_d = self.args.epoch_d
+                epoch_steps = self.args.epoch_steps
                 report_dir_list = []
                 for idx_e, num_epoch in enumerate(range(base_epoch, base_epoch + epoch_d * epoch_steps + 1, epoch_d)):
-                    self.opts.set_epoch(epoch=num_epoch)
+                    self.args.num_epoch = num_epoch
                     if idx_e > 0:
-                        self.opts.set_continue(train_continue="on")
+                        self.args.train_continue = "on"
                     
                     train_report_dir = os.path.join(reports_dir, setup+"epochs_"+str(num_epoch))
                     if not os.path.exists(train_report_dir):
                         os.makedirs(train_report_dir)
                     if not train_report_dir in report_dir_list:
                         report_dir_list += train_report_dir
-                    self.opts.set_report_dir(base_dir=train_report_dir)
-
-                    args = self.opts.setup()
+                    self.args.ckpt_dir = os.path.join(train_report_dir, "checkpoint")
+                    self.args.log_dir = os.path.join(train_report_dir, "log")
+                    self.args.result_dir = os.path.join(train_report_dir, "result")
                     
                     # Initiate train loop
-                    train(args)
+                    train(args=self.args)
                 
-                self.opts.set_mode(mode="test")
-                test_data_dir = os.path.join(setups_dir, setup, "test")
-                if not os.path.exists(test_data_dir):
-                    os.makedirs(test_data_dir)
-                self.opts.set_data_dir(dir=test_data_dir)
+                self.vars["mode"] = "test"
                 for idx_t, test_report_dir in enumerate(report_dir_list):
-                    self.opts.set_report_dir(base_dir=test_report_dir)
-
-                    args = self.opts.setup()
+                    self.args.ckpt_dir = os.path.join(test_report_dir, "checkpoint")
+                    self.args.log_dir = os.path.join(test_report_dir, "log")
+                    self.args.result_dir = os.path.join(test_report_dir, "result")
 
                     # Initiate test loop
-                    test(args)
+                    test(args=self.args)

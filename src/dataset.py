@@ -12,8 +12,8 @@ from src.util import *
 ## Implement the DataLoader
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, transform=None, task=None, data_type="both"):
-        self.data_dir_i = data_dir + "images"
-        self.data_dir_l = data_dir + "labels"
+        self.data_dir_i = os.path.join(data_dir, "images")
+        self.data_dir_l = os.path.join(data_dir, "labels")
         self.transform = transform
         self.task = task
         self.data_type = data_type
@@ -34,7 +34,7 @@ class Dataset(torch.utils.data.Dataset):
                 if f.endswith("json"):
                     dir_data_l = f
             
-            with open(os.path.join(self.data_dir_i, dir_data_l), "r") as json_obj:
+            with open(os.path.join(self.data_dir_l, dir_data_l), "r") as json_obj:
                 dict_l = json.load(json_obj)
         else:
             dict_l = None
