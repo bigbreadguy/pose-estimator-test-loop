@@ -118,3 +118,4 @@ dmypy.json
 
 # Others
 datasets/*
+backups/
