@@ -330,3 +330,63 @@ def patch2image(src, nimg, npatch, nmargin, datatype="tensor", type="count"):
         wgt = torch.from_numpy(wgt)
 
     return dst
+
+class opts():
+    def __init__(self):
+        self.parser = argparse.ArgumentParser(description="CycleGAN",
+                                        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+        self.parser.add_argument("--lr", default=2e-4, type=float, dest="lr")
+        self.parser.add_argument("--batch_size", default=4, type=int, dest="batch_size")
+
+        self.parser.add_argument("--task", default="pose estimation", choices=["pose estimation"], type=str, dest="task")
+
+        self.parser.add_argument("--ny", default=256, type=int, dest="ny")
+        self.parser.add_argument("--nx", default=256, type=int, dest="nx")
+        self.parser.add_argument("--nch", default=3, type=int, dest="nch")
+        self.parser.add_argument("--nker", default=64, type=int, dest="nker")
+
+        self.parser.add_argument("--norm", default='inorm', type=str, dest="norm")
+
+        self.parser.add_argument("--network", default="PoseResNet", choices=["PoseResNet"], type=str, dest="network")
+        self.parser.add_argument("--resnet_depth", default=50, choices=[18, 34, 50, 101, 152], type=int, dest="resnet_depth")
+        self.parser.add_argument("--joint_weight", default=False, type=bool, dest="joint_weight")
+
+        self.parser.add_argument("--cuda", default="cuda", choices=["cuda", "cuda:0", "cuda:1"], type=str, dest="cuda")
+
+    def set_mode(self, mode : str = "train"):
+        self.mode = mode
+    
+    def set_continue(self, train_continue : str = "off"):
+        self.train_continue = train_continue
+
+    def set_epoch(self, epoch : int):
+        self.num_epoch = epoch
+
+    def set_data_dir(self, dir : str):
+        self.data_dir = dir
+    
+    def set_report_dir(self, base_dir : str):
+        self.ckpt_dir = os.path.join(base_dir, "checkpoint")
+        self.log_dir = os.path.join(base_dir, "log")
+        self.result_dir = os.path.join(base_dir, "result")
+
+    def set_num_mark(self, num : int):
+        self.num_mark = int
+
+    def parse(self, args = ""):
+        if args == "":
+            opt = self.parser.parse_args()
+        else:
+            opt = self.parser.parse_args(args)
+        
+        opt.mode = self.mode
+        opt.train_continue = self.train_continue
+        opt.num_epoch = self.num_epoch
+        opt.data_dir = self.data_dir
+        opt.ckpt_dir = self.ckpt_dir
+        opt.log_dir = self.log_dir
+        opt.result_dir = self.result_dir
+        opt.num_mark = self.num_mark
+
+        return opt
