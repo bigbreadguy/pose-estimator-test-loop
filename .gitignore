@@ -118,4 +118,5 @@ dmypy.json
 
 # Others
 datasets/*
+test_results/*
 backups/
