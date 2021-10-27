@@ -11,19 +11,19 @@ from util import *
 
 ## Implement the DataLoader
 class Dataset(torch.utils.data.Dataset):
-    def __init__(self, data_dir, transform=None, task=None, data_type='both'):
-        self.data_dir_i = data_dir + 'images'
-        self.data_dir_l = data_dir + 'labels'
+    def __init__(self, data_dir, transform=None, task=None, data_type="both"):
+        self.data_dir_i = data_dir + "images"
+        self.data_dir_l = data_dir + "labels"
         self.transform = transform
         self.task = task
         self.data_type = data_type
 
-        # Updated at Apr 5 2020
+        # Updated at Oct 27 2021
         self.to_tensor = ToTensor()
 
         if os.path.exists(self.data_dir_i):
             lst_data_i = os.listdir(self.data_dir_i)
-            lst_data_i = [f for f in lst_data_i if f.endswith('jpg') | f.endswith('jpeg') | f.endswith('png')]
+            lst_data_i = [f for f in lst_data_i if f.endswith("jpg") | f.endswith("jpeg") | f.endswith("png")]
             lst_data_i.sort()
         else:
             lst_data_i = []
@@ -31,7 +31,7 @@ class Dataset(torch.utils.data.Dataset):
         if os.path.exists(self.data_dir_l):
             lst_data_l = os.listdir(self.data_dir_l)
             for f in lst_data_l:
-                if f.endswith('json'):
+                if f.endswith("json"):
                     dir_data_l = f
             
             with open(os.path.join(self.data_dir_i, dir_data_l), "r") as json_obj:
@@ -47,7 +47,7 @@ class Dataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         data = {}
-        if self.data_type == 'image' or self.data_type == 'both':
+        if self.data_type == "image" or self.data_type == "both":
             data_i = plt.imread(os.path.join(self.data_dir_i, self.lst_data_i[index]))[:, :, :3]
 
             if data_i.ndim == 2:
@@ -55,15 +55,17 @@ class Dataset(torch.utils.data.Dataset):
             if data_i.dtype == np.uint8:
                 data_i = data_i / 255.0
 
-            data['input'] = data_i
+            data["input"] = data_i
             data["image"] = data_i
 
-        if self.data_type == 'label' or self.data_type == 'both':
+        if self.data_type == "label" or self.data_type == "both":
             data_l = np.array(self.dict_l[index]["joints"])
             data_l = data_l / 255.0
 
-            # data = {'data_b': data_b}
-            data['label'] = data_l
+            data_w = np.array(self.dict_l[index]["joints_vis"])
+
+            data["label"] = data_l
+            data["weight"] = data_w
 
         if self.transform:
             data = self.transform(data)
@@ -75,12 +77,12 @@ class Dataset(torch.utils.data.Dataset):
 ## Implement the Transform Functions
 class ToTensor(object):
     def __call__(self, data):
-        # label, input = data['label'], data['input']
+        # label, input = data["label"], data["input"]
         #
         # label = label.transpose((2, 0, 1)).astype(np.float32)
         # input = input.transpose((2, 0, 1)).astype(np.float32)
         #
-        # data = {'label': torch.from_numpy(label), 'input': torch.from_numpy(input)}
+        # data = {"label": torch.from_numpy(label), "input": torch.from_numpy(input)}
 
         # Updated at Apr 5 2020
         for key, value in data.items():
@@ -99,12 +101,12 @@ class Normalization(object):
         self.std = std
 
     def __call__(self, data):
-        # label, input = data['label'], data['input']
+        # label, input = data["label"], data["input"]
         #
         # input = (input - self.mean) / self.std
         # label = (label - self.mean) / self.std
         #
-        # data = {'label': label, 'input': input}
+        # data = {"label": label, "input": input}
 
         # Updated at Apr 5 2020
         for key, value in data.items():
@@ -115,7 +117,7 @@ class Normalization(object):
 
 class RandomFlip(object):
     def __call__(self, data):
-        # label, input = data['label'], data['input']
+        # label, input = data["label"], data["input"]
 
         ver_flip = np.random.rand() > 0.5
         hor_flip = np.random.rand() > 0.5
@@ -142,7 +144,7 @@ class RandomFlip(object):
                 elif key == "label":
                     data[key] = np.abs(1 - value[:, 1])
 
-        # data = {'label': label, 'input': input}
+        # data = {"label": label, "input": input}
 
         return data
 
@@ -151,7 +153,7 @@ class RandomCrop(object):
       self.shape = shape
 
   def __call__(self, data):
-    # input, label = data['input'], data['label']
+    # input, label = data["input"], data["label"]
     # h, w = input.shape[:2]
 
     keys = list(data.keys())
@@ -167,7 +169,7 @@ class RandomCrop(object):
 
     # input = input[id_y, id_x]
     # label = label[id_y, id_x]
-    # data = {'label': label, 'input': input}
+    # data = {"label": label, "input": input}
 
     # Updated at Apr 5 2020
     for key, value in data.items():
