@@ -42,7 +42,7 @@ class ResNet(nn.Module):
 # Simple Baselines for Human Pose Estimation and Tracking
 # https://arxiv.org/abs/1804.06208v2
 class PoseResNet(nn.Module):
-    def __init__(self, in_channels, out_channels, nker=64, norm="bnorm", num_layers=18):
+    def __init__(self, in_channels, out_channels, nker=64, norm="bnorm", num_layers=50):
         super(PoseResNet, self).__init__()
 
         self.learning_type = learning_type
@@ -57,7 +57,7 @@ class PoseResNet(nn.Module):
                 152: (False, (3, 8, 36, 3), 3)
             }
 
-        res = []        
+        res = []
         is_basic, spec, num_dec = arch_settings[num_layers]
 
         for i, nblk in enumerate(spec):
@@ -100,7 +100,7 @@ class PoseResNet(nn.Module):
         x = self.res(x)
         x = self.dec(x)
         x = self.fc(x)
-        
+
         return x
 
 # Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network
