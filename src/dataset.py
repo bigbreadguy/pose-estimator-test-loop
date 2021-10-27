@@ -60,7 +60,6 @@ class Dataset(torch.utils.data.Dataset):
 
         if self.data_type == 'label' or self.data_type == 'both':
             data_l = np.array(self.dict_l[index]["joints"])
-            
             data_l = data_l / 255.0
 
             # data = {'data_b': data_b}
@@ -172,7 +171,10 @@ class RandomCrop(object):
 
     # Updated at Apr 5 2020
     for key, value in data.items():
-        data[key] = value[id_y, id_x]
+        if key == "image":
+            data[key] = value[id_y, id_x]
+        elif key == "label":
+            data[key] = value - [top, left]
 
     return data
 
