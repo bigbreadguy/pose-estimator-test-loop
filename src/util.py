@@ -339,6 +339,10 @@ class opts():
         self.parser.add_argument("--lr", default=2e-4, type=float, dest="lr")
         self.parser.add_argument("--batch_size", default=4, type=int, dest="batch_size")
 
+        self.parser.add_argument("--base_epoch", default=50, type=int, dest="base_epoch")
+        self.parser.add_argument("--epoch_d", default=50, type=int, dest="epoch_d")
+        self.parser.add_argument("--epoch_steps", default=3, type=int, dest="epoch_steps")
+
         self.parser.add_argument("--task", default="pose estimation", choices=["pose estimation"], type=str, dest="task")
 
         self.parser.add_argument("--ny", default=256, type=int, dest="ny")
@@ -379,7 +383,11 @@ class opts():
             opt = self.parser.parse_args()
         else:
             opt = self.parser.parse_args(args)
-        
+
+        return opt
+
+    def setup(self):
+        opt = self.parser.parse_args()
         opt.mode = self.mode
         opt.train_continue = self.train_continue
         opt.num_epoch = self.num_epoch
