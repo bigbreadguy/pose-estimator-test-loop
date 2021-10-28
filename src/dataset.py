@@ -61,7 +61,7 @@ class Dataset(torch.utils.data.Dataset):
             l_indexes = np.array(self.dict_l[index]["joints"])
             data_l = np.zeros_like(data_i)
             channels = data_l.shape[-1]
-            for channel in channels:
+            for channel in range(channels):
                 data_l[l_indexes[0],l_indexes[1],channel] = joints_vis[channel]
 
             data["hmap"] = data_l
