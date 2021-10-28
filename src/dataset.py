@@ -33,7 +33,7 @@ class Dataset(torch.utils.data.Dataset):
                 if f.endswith("json"):
                     dir_data_l = f
             
-            with open(os.path.join(self.data_dir_i, dir_data_l), "r") as json_obj:
+            with open(os.path.join(self.data_dir_l, dir_data_l), "r") as json_obj:
                 dict_l = json.load(json_obj)
         else:
             dict_l = None
