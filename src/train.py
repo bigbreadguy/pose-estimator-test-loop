@@ -134,8 +134,7 @@ def train(args):
                 output = netP(input_data)
 
                 # Build target heatmap from pose labels
-                resize = transforms.Resize(output.size(), interpolation=InterpolationMode.NEAREST)
-                target = resize(target)
+                target = nn.functional.interpolate(target, output.size(), mode="nearest") 
 
                 # backward netP
                 set_requires_grad(netP, True)
