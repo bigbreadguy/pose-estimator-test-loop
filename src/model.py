@@ -44,9 +44,7 @@ class ResNet(nn.Module):
 class PoseResNet(nn.Module):
     def __init__(self, in_channels, out_channels, nker=64, norm="bnorm", num_layers=50):
         super(PoseResNet, self).__init__()
-
-        self.enc = CBR2d(in_channels, nker, kernel_size=3, stride=1, padding=1, bias=True, norm=None, relu=0.0)
-
+        
         arch_settings = {
                 18: (True, (2, 2, 2, 2), 3),
                 34: (True, (3, 4, 6, 3), 3),
@@ -55,37 +53,35 @@ class PoseResNet(nn.Module):
                 152: (False, (3, 8, 36, 3), 3)
             }
 
-        res = []
         is_basic, spec, num_dec = arch_settings[num_layers]
+            
+        self.enc = CBR2d(in_channels, nker, kernel_size=3, stride=1, padding=1, bias=True, norm=None, relu=0.0)
+
+        res = []
 
         for i, nblk in enumerate(spec):
             for j in range(nblk):
-                if is_basic:
-                    kernel_size = 3
+                base_nker = nker*2**i
+                if j > 0:
+                    mult=4
+                elif i == 0 :
+                    mult=1
                 else:
-                    kernel_size = 2 * (j % 2)+1
-                    
-                    out_mult=1
-                    if j > 1:
-                        out_mult = 4
-                        
-                    in_mult = 2
-                    if i == 0 and j == 0:
-                        in_mult = 1
-
-                res_in_channels = nker*2**i*in_mult
-                res_out_channels = nker*2**i*out_mult
-                res += [ResBlock(res_in_channels, res_out_channels, kernel_size=3, stride=1, padding=1, bias=True, norm=norm, relu=0.0, basic=is_basic)]        
+                    mult=2
+                res += [ResBlock(base_nker=base_nker, mult=mult, kernel_size=3, stride=1, padding=1, bias=True, norm=norm, relu=0.0, basic=is_basic)]        
         
         self.res = nn.Sequential(*res)
 
         dec = []
-        dec_out_channels = nker*4
+        dec_out_channels = 4*nker
         for i in range(num_dec):
             if i == 0:
-                dec_in_channels = res_out_channels
+                if is_basic:
+                    dec_in_channels = base_nker
+                else:
+                    dec_in_channels = 4*base_nker
             else:
-                dec_in_channels = nker*4
+                dec_in_channels = 4*nker
 
             dec += [DECBR2d(dec_in_channels, dec_out_channels, kernel_size=3, stride=1, padding=1, bias=True, norm=norm, relu=0.0)]
         

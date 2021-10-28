@@ -52,42 +52,43 @@ class DECBR2d(nn.Module):
         return self.cbr(x)
 
 class ResBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=True, norm="bnorm", relu=0.0, basic=True):
+    def __init__(self, base_nker, mult, kernel_size=3, stride=1, padding=1, bias=True, norm="bnorm", relu=0.0, basic=True):
         super().__init__()
 
         layers = []
 
         if basic:
             # 1st conv
-            layers += [CBR2d(in_channels=in_channels, out_channels=out_channels,
+            layers += [CBR2d(in_channels=base_nker, out_channels=base_nker,
                             kernel_size=kernel_size, stride=stride, padding=padding,
                             bias=bias, norm=norm, relu=relu)]
 
             # 2nd conv
-            layers += [CBR2d(in_channels=out_channels, out_channels=out_channels,
+            layers += [CBR2d(in_channels=base_nker, out_channels=base_nker,
                             kernel_size=kernel_size, stride=stride, padding=padding,
                             bias=bias, norm=norm, relu=None)]
         else:
             # 1st conv
-            layers += [CBR2d(in_channels=in_channels, out_channels=out_channels,
-                            kernel_size=kernel_size, stride=stride, padding=padding,
+            layers += [CBR2d(in_channels=base_nker*mult, out_channels=base_nker,
+                            kernel_size=1, stride=stride, padding=0,
                             bias=bias, norm=norm, relu=relu)]
 
             # 2nd conv
-            layers += [CBR2d(in_channels=out_channels, out_channels=out_channels,
+            layers += [CBR2d(in_channels=base_nker, out_channels=base_nker,
                             kernel_size=kernel_size, stride=stride, padding=padding,
                             bias=bias, norm=norm, relu=None)]
             
             # 3rd conv
-            layers += [CBR2d(in_channels=out_channels, out_channels=4*out_channels,
-                            kernel_size=kernel_size, stride=stride, padding=padding,
+            layers += [CBR2d(in_channels=base_nker, out_channels=4*base_nker,
+                            kernel_size=1, stride=stride, padding=0,
                             bias=bias, norm=norm, relu=None)]
-
-
+        
+        self.shortcut = nn.Conv2d(in_channels=base_nker*mult, out_channels=4*base_nker,
+                                    kernel_size=1, stride=1, padding=0)
         self.resblk = nn.Sequential(*layers)
 
     def forward(self, x):
-        return x + self.resblk(x)
+        return self.shortcut(x) + self.resblk(x)
 
 
 class PixelUnshuffle(nn.Module):

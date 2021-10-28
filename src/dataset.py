@@ -12,8 +12,8 @@ from src.util import *
 ## Implement the DataLoader
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, transform=None, data_type="both"):
-        self.data_dir_i = data_dir + "images"
-        self.data_dir_l = data_dir + "labels"
+        self.data_dir_i = os.path.join(data_dir, "images")
+        self.data_dir_l = os.path.join(data_dir, "labels")
         self.transform = transform
         self.data_type = data_type
 
@@ -33,7 +33,7 @@ class Dataset(torch.utils.data.Dataset):
                 if f.endswith("json"):
                     dir_data_l = f
             
-            with open(os.path.join(self.data_dir_i, dir_data_l), "r") as json_obj:
+            with open(os.path.join(self.data_dir_l, dir_data_l), "r") as json_obj:
                 dict_l = json.load(json_obj)
         else:
             dict_l = None
@@ -58,11 +58,11 @@ class Dataset(torch.utils.data.Dataset):
             data["image"] = data_i
 
         if self.data_type == "label" or self.data_type == "both":
-            l_indexes = np.array(self.dict_l[index]["joints"])
+            l_indexes = np.array(self.dict_l[index]["joints"], dtype=np.int8)
             data_l = np.zeros_like(data_i)
             channels = data_l.shape[-1]
-            for channel in channels:
-                data_l[l_indexes[0],l_indexes[1],channel] = joints_vis[channel]
+            for channel in range(channels):
+                data_l[l_indexes[0],l_indexes[1],channel] = self.dict_l[index]["joints_vis"][channel]
 
             data["hmap"] = data_l
 
