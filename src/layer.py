@@ -28,7 +28,7 @@ class CBR2d(nn.Module):
         return self.cbr(x)
 
 class DECBR2d(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size=3, stride=2, padding=1, output_padding=1, bias=True, norm="bnorm", relu=0.0):
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=2, padding=1, output_padding=0, bias=True, norm="bnorm", relu=0.0):
         super().__init__()
 
         layers = []
