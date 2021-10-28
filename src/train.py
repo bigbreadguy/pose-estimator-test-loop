@@ -148,7 +148,7 @@ def train(args):
                 loss_P_train += [loss_P.item()]
 
                 print("TRAIN: EPOCH %04d / %04d | BATCH %04d / %04d | "
-                      "POSE a %.4f b %.4f | \n"%
+                      "POSE LOSS %.4f | \n"%
                       (epoch, num_epoch, batch, num_batch_train,
                        np.mean(loss_P_train)))
                 
