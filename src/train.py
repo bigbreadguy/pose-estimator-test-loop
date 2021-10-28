@@ -159,9 +159,9 @@ def train(args):
 
                     id = num_batch_train * (epoch - 1) + batch
 
-                    plt.imsave(os.path.join(result_dir_train, 'png', '%04d_input.png' % id), input_data[0],
+                    plt.imsave(os.path.join(result_dir_train, '%04d_input.png' % id), input_data[0],
                                cmap=cmap)
-                    plt.imsave(os.path.join(result_dir_train, 'png', '%04d_output.png' % id), output[0],
+                    plt.imsave(os.path.join(result_dir_train, '%04d_output.png' % id), output[0],
                                cmap=cmap)
                     
                     writer_train.add_image('input', input_data, id, dataformats='NHWC')
@@ -308,9 +308,9 @@ def test(args):
                     output_ = np.clip(output_, a_min=0, a_max=1)
                     target_ = np.clip(target_, a_min=0, a_max=1)
 
-                    plt.imsave(os.path.join(result_dir_test, 'png', '%04d_input.png' % id), input_data_)
-                    plt.imsave(os.path.join(result_dir_test, 'png', '%04d_output.png' % id), output_)
-                    plt.imsave(os.path.join(result_dir_test, 'png', '%04d_target.png' % id), target_)
+                    plt.imsave(os.path.join(result_dir_test, '%04d_input.png' % id), input_data_)
+                    plt.imsave(os.path.join(result_dir_test, '%04d_output.png' % id), output_)
+                    plt.imsave(os.path.join(result_dir_test, '%04d_target.png' % id), target_)
                     writer_test.add_image('input', input_data, id, dataformats='NHWC')
                     writer_test.add_image('output', output, id, dataformats='NHWC')
                     writer_test.add_image('target', target, id, dataformats='NHWC')
