@@ -157,6 +157,9 @@ def train(args):
                     input_data = fn_tonumpy(fn_denorm(input_data)).squeeze()
                     output = fn_tonumpy(fn_denorm(output)).squeeze()
 
+                    input_data = np.ceil(input_data, a_min=0, a_max=1)
+                    output = np.ceil(output a_min=0, a_max=1)
+
                     id = num_batch_train * (epoch - 1) + batch
 
                     plt.imsave(os.path.join(result_dir_train, '%04d_input.png' % id), input_data[0],
