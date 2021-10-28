@@ -58,11 +58,11 @@ class Dataset(torch.utils.data.Dataset):
             data["image"] = data_i
 
         if self.data_type == "label" or self.data_type == "both":
-            l_indexes = np.array(self.dict_l[index]["joints"])
+            l_indexes = np.array(self.dict_l[index]["joints"], dtype=np.int8)
             data_l = np.zeros_like(data_i)
             channels = data_l.shape[-1]
             for channel in range(channels):
-                data_l[l_indexes[0],l_indexes[1],channel] = joints_vis[channel]
+                data_l[l_indexes[0],l_indexes[1],channel] = self.dict_l[index]["joints_vis"][channel]
 
             data["hmap"] = data_l
 
