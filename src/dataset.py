@@ -10,16 +10,11 @@ import matplotlib.pyplot as plt
 from src.util import *
 
 ## Implement the DataLoader
-class Dataset(torch.utils.data.Dataset):
-    def __init__(self, data_dir, transform=None, task=None, data_type="both"):
+class DatasetImages(torch.utils.data.Dataset):
+    def __init__(self, data_dir, task=None):
         self.data_dir_i = os.path.join(data_dir, "images")
-        self.data_dir_l = os.path.join(data_dir, "labels")
-        self.transform = transform
+        
         self.task = task
-        self.data_type = data_type
-
-        # Updated at Oct 27 2021
-        self.to_tensor = ToTensor()
 
         if os.path.exists(self.data_dir_i):
             lst_data_i = os.listdir(self.data_dir_i)
@@ -27,6 +22,31 @@ class Dataset(torch.utils.data.Dataset):
             lst_data_i.sort()
         else:
             lst_data_i = []
+        
+        self.lst_data_i = lst_data_i
+
+    def __len__(self):
+        return len(self.lst_data_i)
+
+    def __getitem__(self, index):
+        data = {}
+    
+        data_i = plt.imread(os.path.join(self.data_dir_i, self.lst_data_i[index]))[:, :, :3]
+
+        if data_i.ndim == 2:
+            data_i = data_i[:, :, np.newaxis]
+        if data_i.dtype == np.uint8:
+            data_i = data_i / 255.0
+
+        data["image"] = data_i
+
+        return data
+
+class DatasetLabels(torch.utils.data.Dataset):
+    def __init__(self, data_dir, task=None):
+        self.data_dir_l = os.path.join(data_dir, "labels")
+
+        self.task = task
 
         if os.path.exists(self.data_dir_l):
             lst_data_l = os.listdir(self.data_dir_l)
@@ -39,40 +59,44 @@ class Dataset(torch.utils.data.Dataset):
         else:
             dict_l = None
         
-        self.lst_data_i = lst_data_i
         self.dict_l = dict_l
 
     def __len__(self):
-        return len(self.lst_data_i)
+        return len(self.dict_l)
 
     def __getitem__(self, index):
         data = {}
-        if self.data_type == "image" or self.data_type == "both":
-            data_i = plt.imread(os.path.join(self.data_dir_i, self.lst_data_i[index]))[:, :, :3]
+        
+        data_l = np.array(self.dict_l[index]["joints"])
+        data_l = data_l / 255.0
 
-            if data_i.ndim == 2:
-                data_i = data_i[:, :, np.newaxis]
-            if data_i.dtype == np.uint8:
-                data_i = data_i / 255.0
+        data_w = np.array(self.dict_l[index]["joints_vis"])
 
-            data["input"] = data_i
-            data["image"] = data_i
-
-        if self.data_type == "label" or self.data_type == "both":
-            data_l = np.array(self.dict_l[index]["joints"])
-            data_l = data_l / 255.0
-
-            data_w = np.array(self.dict_l[index]["joints_vis"])
-
-            data["label"] = data_l
-            data["weight"] = data_w
-
-        if self.transform:
-            data = self.transform(data)
-
-        data = self.to_tensor(data)
+        data["label"] = data_l
+        data["weight"] = data_w
 
         return data
+
+class ConcatDataset(torch.utils.data.Dataset):
+    def __init__(self, datasets_a, datasets_b, transform=None):
+        self.datasets_a = datasets_a
+        self.datasets_b = datasets_b
+        self.transform = transform
+
+        self.to_tensor = ToTensor()
+
+    def __getitem__(self, i):
+        if self.transform:
+            data_a = self.transform(self.datasets_a[i])
+            data_b = self.transform(self.datasets_b[i])
+            
+        data_a = self.to_tensor(data_a)
+        data_b = self.to_tensor(data_b)
+
+        return (data_a, data_b)
+
+    def __len__(self):
+        return len(self.datasets_a)
 
 ## Implement the Transform Functions
 class ToTensor(object):
@@ -88,8 +112,6 @@ class ToTensor(object):
         for key, value in data.items():
             if key == "image":
                 value = value.transpose((2, 0, 1)).astype(np.float32)
-            elif key == "label":
-                pass
 
             data[key] = torch.from_numpy(value)
 
@@ -176,7 +198,10 @@ class RandomCrop(object):
         if key == "image":
             data[key] = value[id_y, id_x]
         elif key == "label":
-            data[key] = value - [top, left]
+            empty = np.zeros_like(value)
+            empty[..., 0] = value[..., 0] - top
+            empty[..., 1] = value[..., 1] - left
+            data[key] = empty
 
     return data
 

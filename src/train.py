@@ -83,9 +83,14 @@ def train(args):
                                               RandomFlip(),
                                               Normalization(mean=MEAN, std=STD)])
 
-        dataset_train = Dataset(data_dir=os.path.join(data_dir, 'train'),
-                                transform=transform_train,
-                                task=task, data_type='both')
+        image_train = DatasetImages(data_dir=os.path.join(data_dir, 'train'),
+                                    task=task)
+
+        label_train = DatasetLabels(data_dir=os.path.join(data_dir, 'train'),
+                                    task=task)
+
+        dataset_train = ConcatDataset(image_train, label_train,
+                                      transform=transform_train)
 
         loader_train = DataLoader(dataset_train,
                                   batch_size=batch_size,
@@ -126,10 +131,12 @@ def train(args):
             netP.train()
             loss_P_train = []
 
-            for batch, data in enumerate(loader_train, 1):
-                input_data = data["image"].to(device)
-                pose_label = data["label"].to(device)
-                target_weight = data["label"].to(device)
+            for batch, (data_i, data_l) in enumerate(loader_train, 1):
+                print(len(data_i))
+                print(data_i[1])
+                input_data = data_i.to(device)
+                pose_label = data_l.to(device)
+                target_weight = data_w.to(device)
 
                 # forward netP
                 output = netP(input_data)
@@ -234,9 +241,14 @@ def test(args):
     if mode == 'test':
         transform_test = transforms.Compose([Resize(shape=(ny, nx, nch)), Normalization(mean=MEAN, std=STD)])
 
-        dataset_test = Dataset(data_dir=os.path.join(data_dir, 'test'),
-                                transform=transform_test,
-                                task=task, data_type='both')
+        image_test = DatasetImages(data_dir=os.path.join(data_dir, 'test'),
+                                    task=task, data_type='both')
+
+        label_test = DatasetLabels(data_dir=os.path.join(data_dir, 'test'),
+                                    task=task, data_type='both')
+
+        dataset_test = ConcatDataset(image_test, label_test,
+                                     transform=transform_test)
 
         loader_test = DataLoader(dataset_test,
                                     batch_size=batch_size,
