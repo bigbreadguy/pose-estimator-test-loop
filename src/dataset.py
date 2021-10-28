@@ -12,8 +12,8 @@ from src.util import *
 ## Implement the DataLoader
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, transform=None, data_type="both"):
-        self.data_dir_i = data_dir + "images"
-        self.data_dir_l = data_dir + "labels"
+        self.data_dir_i = os.path.join(data_dir, "images")
+        self.data_dir_l = os.path.join(data_dir, "labels")
         self.transform = transform
         self.data_type = data_type
 
