@@ -10,6 +10,69 @@ import matplotlib.pyplot as plt
 from src.util import *
 
 ## Implement the DataLoader
+class Dataset(torch.utils.data.Dataset):
+    def __init__(self, data_dir, transform=None, data_type="both"):
+        self.data_dir_i = data_dir + "images"
+        self.data_dir_l = data_dir + "labels"
+        self.transform = transform
+        self.data_type = data_type
+
+        # Updated at Oct 27 2021
+        self.to_tensor = ToTensor()
+
+        if os.path.exists(self.data_dir_i):
+            lst_data_i = os.listdir(self.data_dir_i)
+            lst_data_i = [f for f in lst_data_i if f.endswith("jpg") | f.endswith("jpeg") | f.endswith("png")]
+            lst_data_i.sort()
+        else:
+            lst_data_i = []
+
+        if os.path.exists(self.data_dir_l):
+            lst_data_l = os.listdir(self.data_dir_l)
+            for f in lst_data_l:
+                if f.endswith("json"):
+                    dir_data_l = f
+            
+            with open(os.path.join(self.data_dir_i, dir_data_l), "r") as json_obj:
+                dict_l = json.load(json_obj)
+        else:
+            dict_l = None
+        
+        self.lst_data_i = lst_data_i
+        self.dict_l = dict_l
+
+    def __len__(self):
+        return len(self.lst_data_i)
+
+    def __getitem__(self, index):
+        data = {}
+        if self.data_type == "image" or self.data_type == "both":
+            data_i = plt.imread(os.path.join(self.data_dir_i, self.lst_data_i[index]))[:, :, :3]
+
+            if data_i.ndim == 2:
+                data_i = data_i[:, :, np.newaxis]
+            if data_i.dtype == np.uint8:
+                data_i = data_i / 255.0
+
+            data["input"] = data_i
+            data["image"] = data_i
+
+        if self.data_type == "label" or self.data_type == "both":
+            l_indexes = np.array(self.dict_l[index]["joints"])
+            data_l = np.zeros_like(data_i)
+            channels = data_l.shape[-1]
+            for channel in channels:
+                data_l[l_indexes[0],l_indexes[1],channel] = joints_vis[channel]
+
+            data["hmap"] = data_l
+
+        if self.transform:
+            data = self.transform(data)
+
+        data = self.to_tensor(data)
+
+        return data
+
 class DatasetImages(torch.utils.data.Dataset):
     def __init__(self, data_dir, task=None):
         self.data_dir_i = os.path.join(data_dir, "images")
@@ -110,7 +173,7 @@ class ToTensor(object):
 
         # Updated at Apr 5 2020
         for key, value in data.items():
-            if key == "image":
+            if key == "image" or key == "hmap":
                 value = value.transpose((2, 0, 1)).astype(np.float32)
 
             data[key] = torch.from_numpy(value)
@@ -150,7 +213,7 @@ class RandomFlip(object):
 
             # Updated at Apr 5 2020
             for key, value in data.items():
-                if key == "image":
+                if key == "image" or key == "hmap":
                     data[key] = np.flip(value, axis=0)
                 elif key == "label":
                     data[key] = np.abs(1 - value[:, 0])
@@ -161,7 +224,7 @@ class RandomFlip(object):
 
             # Updated at Apr 5 2020
             for key, value in data.items():
-                if key == "image":
+                if key == "image" or key == "hmap":
                     data[key] = np.flip(value, axis=1)
                 elif key == "label":
                     data[key] = np.abs(1 - value[:, 1])
@@ -195,7 +258,7 @@ class RandomCrop(object):
 
     # Updated at Apr 5 2020
     for key, value in data.items():
-        if key == "image":
+        if key == "image" or key == "hmap":
             data[key] = value[id_y, id_x]
         elif key == "label":
             empty = np.zeros_like(value)

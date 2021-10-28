@@ -83,14 +83,8 @@ def train(args):
                                               RandomFlip(),
                                               Normalization(mean=MEAN, std=STD)])
 
-        image_train = DatasetImages(data_dir=os.path.join(data_dir, 'train'),
-                                    task=task)
-
-        label_train = DatasetLabels(data_dir=os.path.join(data_dir, 'train'),
-                                    task=task)
-
-        dataset_train = ConcatDataset(image_train, label_train,
-                                      transform=transform_train)
+        dataset_train = Dataset(data_dir=os.path.join(data_dir, 'train'),
+                                transform=transform_train)
 
         loader_train = DataLoader(dataset_train,
                                   batch_size=batch_size,
@@ -131,19 +125,17 @@ def train(args):
             netP.train()
             loss_P_train = []
 
-            for batch, (data_i, data_l) in enumerate(loader_train, 1):
-                print(len(data_i))
-                print(data_i[1])
-                input_data = data_i.to(device)
-                pose_label = data_l.to(device)
-                target_weight = data_w.to(device)
+            for batch, data in enumerate(loader_train, 1):
+                input_data = data["image"].to(device)
+                target = data["hmap"].to(device)
+                target_weight = None
 
                 # forward netP
                 output = netP(input_data)
 
                 # Build target heatmap from pose labels
-                target = torch.zeros_like(output)
-                target[:, :, pose_label[:,:,0], pose_label[:,:,1]] = 1
+                resize = transforms.Resize(output.size(), interpolation=InterpolationMode.NEAREST)
+                target = resize(target)
 
                 # backward netP
                 set_requires_grad(netP, True)
@@ -241,13 +233,7 @@ def test(args):
     if mode == 'test':
         transform_test = transforms.Compose([Resize(shape=(ny, nx, nch)), Normalization(mean=MEAN, std=STD)])
 
-        image_test = DatasetImages(data_dir=os.path.join(data_dir, 'test'),
-                                    task=task, data_type='both')
-
-        label_test = DatasetLabels(data_dir=os.path.join(data_dir, 'test'),
-                                    task=task, data_type='both')
-
-        dataset_test = ConcatDataset(image_test, label_test,
+        dataset_test = Dataset(data_dir=os.path.join(data_dir, 'test'),
                                      transform=transform_test)
 
         loader_test = DataLoader(dataset_test,
@@ -292,15 +278,15 @@ def test(args):
 
             for batch, data in enumerate(loader_test, 1):
                 input_data = data["image"].to(device)
-                pose_label = data["label"].to(device)
-                target_weight = data["label"].to(device)
+                pose_label = data["hmap"].to(device)
+                target_weight = None
 
                 # forward netP
                 output = netP(input_data)
 
                 # Build target heatmap from pose labels
-                target = torch.zeros_like(output)
-                target[:, :, pose_label[:,:,0], pose_label[:,:,1]] = 1
+                resize = transforms.Resize(output.size(), interpolation=InterpolationMode.NEAREST)
+                target = resize(target)
 
                 loss = fn_pose(output, target, target_weight)
 
