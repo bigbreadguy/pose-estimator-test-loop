@@ -117,6 +117,5 @@ dmypy.json
 .vs/
 
 # Others
-datasets/*
 test_results/*
 backups/
