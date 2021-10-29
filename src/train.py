@@ -83,16 +83,23 @@ def train(args):
                                               RandomFlip(),
                                               Normalization(mean=MEAN, std=STD)])
 
-        dataset_train = Dataset(data_dir=os.path.join(data_dir, 'train'),
+        dataset_full = Dataset(data_dir=os.path.join(data_dir, 'train'),
                                 transform=transform_train)
+        
+        # Set Other Variables 
+        num_data = len(dataset_full)
+        num_data_train = num_data // 10 * 9
+        num_batch_train = np.ceil(num_data_train / batch_size)
+
+        dataset_train, dataset_val = torch.utils.data.random_split(dataset_full, [num_train, nun_data-num_data_train])
 
         loader_train = DataLoader(dataset_train,
                                   batch_size=batch_size,
                                   shuffle=True, num_workers=NUM_WORKER)
-        
-        # Set Other Variables 
-        num_data_train = len(dataset_train)
-        num_batch_train = np.ceil(num_data_train / batch_size)
+
+        loader_val = DataLoader(dataset_val,
+                                  batch_size=batch_size,
+                                  shuffle=True, num_workers=NUM_WORKER)
 
     if network == "PoseResNet":
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
@@ -120,6 +127,8 @@ def train(args):
             netP, optimP = load(ckpt_dir=ckpt_dir,
                                 netP=netP,
                                 optimP=optimP)
+        
+        early_stop = EarlyStopping(ckpt_dir=ckpt_dir)
 
         for epoch in range(st_epoch + 1, num_epoch + 1):
             netP.train()
@@ -173,6 +182,22 @@ def train(args):
                     if epoch % 10 == 0 or epoch == num_epoch:
                         save(ckpt_dir=ckpt_dir, epoch=epoch,
                             netP=netP, optimP=optimP)
+            
+            val_data = next(iter(loader_val))
+            val_input = val_data["image"].to(device)
+            val_target = val_data["hmap"].to(device)
+
+            # forward netP
+            val_output = netP(val_input)
+
+            # Build target heatmap from pose labels
+            val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest")
+            
+            # Early stop when validation loss does not reduce
+            val_loss = fn_pose(val_output, val_target, None)
+            early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch0)
+            if early_stop.early_stop:
+                break
 
     writer_train.close()
 
