@@ -175,8 +175,10 @@ def train(args):
                                cmap=cmap)
                     plt.imsave(os.path.join(result_dir_train, '%04d_output.png' % id), output[0],
                                cmap=cmap)
-                    
-                    writer_train.add_image('input', input_data, id, dataformats='NHWC')
+                    if not batch_size==1:
+                        writer_train.add_image('input', input_data, id, dataformats='NHWC')
+                    else:
+                        writer_train.add_image('input', input_data, id, dataformats='HWC')
                     writer_train.add_scalar('loss_P', np.mean(loss_P_train), epoch)
 
                     if epoch % 10 == 0 or epoch == num_epoch:
