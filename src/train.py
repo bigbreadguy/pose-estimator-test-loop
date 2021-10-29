@@ -99,7 +99,7 @@ def train(args):
 
         loader_val = DataLoader(dataset_val,
                                   batch_size=batch_size,
-                                  shuffle=True, num_workers=NUM_WORKER)
+                                  4shuffle=True, num_workers=NUM_WORKER)
 
     if network == "PoseResNet":
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
@@ -195,7 +195,7 @@ def train(args):
             
             # Early stop when validation loss does not reduce
             val_loss = fn_pose(val_output, val_target, None)
-            early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch0)
+            early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
             if early_stop.early_stop:
                 break
 
