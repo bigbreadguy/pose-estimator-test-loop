@@ -91,7 +91,7 @@ def train(args):
         num_data_train = num_data // 10 * 9
         num_batch_train = np.ceil(num_data_train / batch_size)
 
-        dataset_train, dataset_val = torch.utils.data.random_split(dataset_full, [num_train, nun_data-num_data_train])
+        dataset_train, dataset_val = torch.utils.data.random_split(dataset_full, [num_data_train, nun_data-num_data_train])
 
         loader_train = DataLoader(dataset_train,
                                   batch_size=batch_size,
