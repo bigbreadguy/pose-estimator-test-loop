@@ -99,7 +99,7 @@ def train(args):
 
         loader_val = DataLoader(dataset_val,
                                   batch_size=batch_size,
-                                  4shuffle=True, num_workers=NUM_WORKER)
+                                  shuffle=True, num_workers=NUM_WORKER)
 
     if network == "PoseResNet":
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
