@@ -28,7 +28,7 @@
  **lr** defines learning rate, default value is 2e-4.</br>
  **batch_size** defines batch size, default is 4, yet 2 is recommended.</br>
  
- These 3 arguments defines grid search settings for the epochs.</br>
+ **These 3 arguments defines grid search settings for the epochs.**</br>
  **base_epoch** defines very first epoch grid, the test loop will train the model until it reaches the value.</br>
  **epoch_d** defines displacement between the grids.</br>
  **epoch_steps** defines how many grids will be set.</br>
