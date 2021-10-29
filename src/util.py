@@ -335,7 +335,7 @@ def patch2image(src, nimg, npatch, nmargin, datatype="tensor", type="count"):
 
 class opts():
     def __init__(self):
-        self.parser = argparse.ArgumentParser(description="CycleGAN",
+        self.parser = argparse.ArgumentParser(description="TestLoop",
                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
         self.parser.add_argument("--lr", default=2e-4, type=float, dest="lr")
