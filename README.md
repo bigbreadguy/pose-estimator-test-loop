@@ -38,7 +38,8 @@
  **nch** channel-wise dimension of given images.</br>
  **nker** base numbers of kernels in the ResNet blocks, 64 is default.</br>
  **norm** defines what kind of normalization method should be attatched</br>
-          bnorm : batch normalization, inorm : instance normalization.</br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bnorm : batch normalization,</br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inorm : instance normalization.</br>
  **network** defines the network that will be served as pose estimator.</br>
  **resnet_depth** defines how many layers the ResNet will have.</br>
  **cuda** you can select the device with this argument.</br>
