@@ -124,7 +124,7 @@ def train(args):
     st_epoch = 0
     if mode == 'train':
         if train_continue == "on":
-            netP, optimP = load(ckpt_dir=ckpt_dir,
+            st_epoch, netP, optimP = load(ckpt_dir=ckpt_dir,
                                 netP=netP,
                                 optimP=optimP)
         
