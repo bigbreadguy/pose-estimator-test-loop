@@ -76,7 +76,7 @@ def load(ckpt_dir, netP, optimP):
 
     dict_model = torch.load('%s/%s' % (ckpt_dir, ckpt_lst[-1]), map_location=device)
 
-    netP_a.load_state_dict(dict_model['netP'])
+    netP.load_state_dict(dict_model['netP'])
     optimP.load_state_dict(dict_model['optimP'])
     epoch = int(ckpt_lst[-1].split('epoch')[1].split('.pth')[0])
 
