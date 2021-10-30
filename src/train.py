@@ -134,7 +134,7 @@ def train(args):
             netP.train()
             loss_P_train = []
             val_data = next(iter(loader_val))
-            val_input = val_data["image"]
+            val_input = val_data["image"].to(device)
             val_target = val_data["hmap"]
 
             for batch, data in enumerate(loader_train, 1):
@@ -190,10 +190,10 @@ def train(args):
 
             # forward netP
             val_output = netP(val_input)
-            val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest")
+            val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest").to(device)
             
             # Early stop when validation loss does not reduce
-            val_loss = fn_pose(val_output, val_target, None).to(device)
+            val_loss = fn_pose(val_output, val_target, None)
             early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
             if early_stop.early_stop:
                 break
