@@ -401,6 +401,7 @@ class opts():
 
         self.parser.add_argument("--lr", default=2e-4, type=float, dest="lr")
         self.parser.add_argument("--batch_size", default=1, type=int, dest="batch_size")
+        self.parser.add_argument("train_continue", default="on", choices=["on", "off"], type=str, dest="train_continue")
 
         self.parser.add_argument("--base_epoch", default=5, type=int, dest="base_epoch")
         self.parser.add_argument("--epoch_d", default=5, type=int, dest="epoch_d")

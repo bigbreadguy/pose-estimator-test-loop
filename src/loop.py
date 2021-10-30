@@ -37,7 +37,6 @@ class TestLoop(object):
             for idx_s, setup in enumerate(setups_list):
                 # Set arguments for training
                 self.vars["mode"] = "train"
-                self.vars["train_continue"] = "off"
 
                 train_data_dir = os.path.join(setups_dir, setup)
                 if not os.path.exists(train_data_dir):
