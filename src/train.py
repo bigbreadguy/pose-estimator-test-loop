@@ -133,6 +133,10 @@ def train(args):
         for epoch in range(st_epoch + 1, num_epoch + 1):
             netP.train()
             loss_P_train = []
+            val_data = next(iter(loader_val))
+            val_input = val_data["image"].to(device)
+            val_target = val_data["hmap"]
+            val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest").to(device)
 
             for batch, data in enumerate(loader_train, 1):
                 input_data = data["image"].to(device)
@@ -182,16 +186,9 @@ def train(args):
                     if epoch % 10 == 0 or epoch == num_epoch:
                         save(ckpt_dir=ckpt_dir, epoch=epoch,
                             netP=netP, optimP=optimP)
-            
-            val_data = next(iter(loader_val))
-            val_input = val_data["image"].to(device)
-            val_target = val_data["hmap"].to(device)
 
             # forward netP
             val_output = netP(val_input)
-
-            # Build target heatmap from pose labels
-            val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest")
             
             # Early stop when validation loss does not reduce
             val_loss = fn_pose(val_output, val_target, None)
