@@ -134,7 +134,7 @@ def train(args):
             netP.train()
             loss_P_train = []
             val_data = next(iter(loader_val))
-            val_input = val_data["image"].to(device)
+            val_input = val_data["image"]
             val_target = val_data["hmap"]
 
             for batch, data in enumerate(loader_train, 1):
