@@ -136,7 +136,6 @@ def train(args):
             val_data = next(iter(loader_val))
             val_input = val_data["image"].to(device)
             val_target = val_data["hmap"]
-            val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest").to(device)
 
             for batch, data in enumerate(loader_train, 1):
                 input_data = data["image"].to(device)
@@ -158,7 +157,7 @@ def train(args):
                 optimP.step()
 
                 # compute the losses
-                loss_P_train += [loss_P.item()]
+                loss_P_train += [float(loss_P.item())]
 
                 print("TRAIN: EPOCH %04d / %04d | BATCH %04d / %04d | "
                       "POSE LOSS %.4f | \n"%
@@ -191,9 +190,10 @@ def train(args):
 
             # forward netP
             val_output = netP(val_input)
+            val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest")
             
             # Early stop when validation loss does not reduce
-            val_loss = fn_pose(val_output, val_target, None)
+            val_loss = fn_pose(val_output, val_target, None).to(device)
             early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
             if early_stop.early_stop:
                 break
