@@ -384,9 +384,11 @@ class EarlyStopping:
         '''Saves model when validation loss decrease.'''
         if self.verbose:
             self.trace_func(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
-        torch.save({'netP': model.state_dict(),
-                'optimP': optim.state_dict()},
-            "%s/model_epoch%d.pth" % (self.ckpt_dir, epoch))
+            if not os.path.exists(self.ckpt_dir):
+                os.makedirs(self.ckpt_dir)
+            torch.save({'netP': model.state_dict(),
+                    'optimP': optim.state_dict()},
+                    "%s/model_epoch%d.pth" % (self.ckpt_dir, epoch)
         self.val_loss_min = val_loss
 
 class opts():
