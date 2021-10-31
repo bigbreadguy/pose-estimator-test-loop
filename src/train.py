@@ -189,12 +189,15 @@ def train(args):
                             netP=netP, optimP=optimP)
 
             # forward netP
-            val_output = netP(val_input)
-            val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest").to(device)
-            
-            # Early stop when validation loss does not reduce
-            val_loss = fn_pose(val_output, val_target, None)
-            early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
+            with torch.no_grad():
+                netP.eval()
+                val_output = netP(val_input)
+                val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest").to(device)
+                
+                # Early stop when validation loss does not reduce
+                val_loss = fn_pose(val_output, val_target, None)
+                early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
+                
             if early_stop.early_stop:
                 break
 
