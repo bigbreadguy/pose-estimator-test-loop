@@ -48,32 +48,26 @@ class TestLoop(object):
                     num_mark = len(labels_dict[0]["joints_vis"])
                 self.vars["num_mark"] = num_mark
 
-                base_epoch = self.args.base_epoch
-                epoch_d = self.args.epoch_d
-                epoch_steps = self.args.epoch_steps
-                report_dir_list = []
-                for idx_e, num_epoch in enumerate(range(base_epoch, base_epoch + epoch_d * epoch_steps + 1, epoch_d)):
-                    self.args.num_epoch = num_epoch
-                    if idx_e > 0:
-                        self.args.train_continue = "on"
-                    
-                    train_report_dir = os.path.join(reports_dir, setup+"epochs_"+str(num_epoch))
-                    if not os.path.exists(train_report_dir):
-                        os.makedirs(train_report_dir)
-                    if not train_report_dir in report_dir_list:
-                        report_dir_list += train_report_dir
-                    self.args.ckpt_dir = os.path.join(train_report_dir, "checkpoint")
-                    self.args.log_dir = os.path.join(train_report_dir, "log")
-                    self.args.result_dir = os.path.join(train_report_dir, "result")
-                    
-                    # Initiate train loop
-                    train(args=self.args)
+                num_epoch = self.args.num_epoch
+                
+                train_report_dir = os.path.join(reports_dir, design, setup)
+                if not os.path.exists(train_report_dir):
+                    os.makedirs(train_report_dir)
+                if not train_report_dir in report_dir_list:
+                    report_dir_list += train_report_dir
+                
+                self.args.ckpt_dir = os.path.join(train_report_dir, "checkpoint")
+                self.args.log_dir = os.path.join(train_report_dir, "log")
+                self.args.result_dir = os.path.join(train_report_dir, "result")
+                
+                # Initiate train loop
+                train(args=self.args)
                 
                 self.vars["mode"] = "test"
-                for idx_t, test_report_dir in enumerate(report_dir_list):
-                    self.args.ckpt_dir = os.path.join(test_report_dir, "checkpoint")
-                    self.args.log_dir = os.path.join(test_report_dir, "log")
-                    self.args.result_dir = os.path.join(test_report_dir, "result")
 
-                    # Initiate test loop
-                    test(args=self.args)
+                self.args.ckpt_dir = os.path.join(train_report_dir, "checkpoint")
+                self.args.log_dir = os.path.join(train_report_dir, "log")
+                self.args.result_dir = os.path.join(train_report_dir, "result")
+
+                # Initiate test loop
+                test(args=self.args)
