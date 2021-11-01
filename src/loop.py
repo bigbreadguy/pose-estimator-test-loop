@@ -53,8 +53,6 @@ class TestLoop(object):
                 train_report_dir = os.path.join(reports_dir, design, setup)
                 if not os.path.exists(train_report_dir):
                     os.makedirs(train_report_dir)
-                if not train_report_dir in report_dir_list:
-                    report_dir_list += train_report_dir
                 
                 self.args.ckpt_dir = os.path.join(train_report_dir, "checkpoint")
                 self.args.log_dir = os.path.join(train_report_dir, "log")
