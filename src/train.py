@@ -333,13 +333,12 @@ def test(args):
                 output = netP(input_data)
 
                 # Build target heatmap from pose labels
-                resize = transforms.Resize(output.size(), interpolation=InterpolationMode.NEAREST)
-                target = resize(target)
+                target = nn.functional.interpolate(target, (output.size()[2], output.size()[3]), mode="nearest")
 
                 loss = fn_pose(output, target, target_weight)
 
                 # compute the losses
-                loss_P += [loss.item()]
+                loss_P += [float(loss.item())]
 
                 # Save to the Tensorboard
                 input_data = fn_tonumpy(fn_denorm(input_data))
