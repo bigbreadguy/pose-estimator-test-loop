@@ -27,6 +27,10 @@ class TestLoop(object):
                 report_dir = os.path.join(test_report_dir, design)
                 if not os.path.exists(report_dir):
                     os.makedirs(report_dir)
+        
+        self.execute_log_dir = os.path.join(cwd, "log")
+        if not os.path.exists(self.execute_log_dir):
+            os.makedirs(self.execute_log_dir)
     
     def stroll(self):
         for idx_d, design in enumerate(tqdm.tqdm(self.test_design_list)):
@@ -37,6 +41,8 @@ class TestLoop(object):
             for idx_s, setup in enumerate(setups_list):
                 # Set arguments for training
                 self.vars["mode"] = "train"
+
+                self.vars["log_prefix"] = os.path.join(self.execute_log_dir, setup)
 
                 train_data_dir = os.path.join(setups_dir, setup)
                 if not os.path.exists(train_data_dir):

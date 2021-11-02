@@ -1,4 +1,6 @@
 import os
+from datetime import timedelta, timezone, date
+
 import numpy as np
 
 import torch
@@ -34,6 +36,8 @@ def train(args):
     ckpt_dir = args.ckpt_dir
     log_dir = args.log_dir
     result_dir = args.result_dir
+
+    log_prefix = args.log_prefix
 
     task = args.task
     num_mark = args.num_mark
@@ -120,6 +124,12 @@ def train(args):
     ## Set SummaryWriter for the Tensorboard
     writer_train = SummaryWriter(log_dir=os.path.join(log_dir, 'train'))
 
+    ## Open log file and write
+    date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+
+    f = open(log_prefix + "-" + mode, "a")
+    f.write("initiate {mode} loop : " + date_time + "\n")
+
     ## Train the Networks
     st_epoch = 0
     if mode == 'train':
@@ -159,7 +169,7 @@ def train(args):
                 # compute the losses
                 loss_P_train += [float(loss_P.item())]
 
-                print("TRAIN: EPOCH %04d / %04d | BATCH %04d / %04d | "
+                f.write("TRAIN: EPOCH %04d / %04d | BATCH %04d / %04d | "
                       "POSE LOSS %.4f | \n"%
                       (epoch, num_epoch, batch, num_batch_train,
                        np.mean(loss_P_train)))
@@ -202,6 +212,7 @@ def train(args):
                 break
 
     writer_train.close()
+    f.close()
 
 def test(args):
     ## Set Hyperparameters for the Testing
@@ -216,6 +227,8 @@ def test(args):
     ckpt_dir = args.ckpt_dir
     log_dir = args.log_dir
     result_dir = args.result_dir
+
+    log_prefix = args.log_prefix
 
     task = args.task
     num_mark = args.num_mark
@@ -292,11 +305,17 @@ def test(args):
     ## Set SummaryWriter for the Tensorboard
     writer_test = SummaryWriter(log_dir=os.path.join(log_dir, 'test'))
 
+    ## Open log file and write
+    date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+
+    f = open(log_prefix + "-" + mode, "a")
+    f.write("initiate {mode} loop : " + date_time + "\n")
+
     ## Inference
     st_epoch = 0
 
     if mode == 'test':
-        netP, optimP = load(ckpt_dir=ckpt_dir,
+        epoch, netP, optimP = load(ckpt_dir=ckpt_dir,
                                 netP=netP,
                                 optimP=optimP)
 
@@ -345,8 +364,9 @@ def test(args):
                     writer_test.add_image('output', output, id, dataformats='NHWC')
                     writer_test.add_image('target', target, id, dataformats='NHWC')
 
-                    print("TEST: BATCH %04d / %04d | " % (id + 1, num_data_test))
+                    f.write("TEST: BATCH %04d / %04d | " % (id + 1, num_data_test))
 
                 writer_test.add_scalar('loss', loss_P[-1], batch)
     
     writer_test.close()
+    f.close()
