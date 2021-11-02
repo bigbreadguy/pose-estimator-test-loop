@@ -399,6 +399,8 @@ class opts():
         self.parser = argparse.ArgumentParser(description="TestLoop",
                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
+        self.parser.add_argument("--loop", default="stroll", choices=["stroll", "test"], type=str, dest="loop")
+
         self.parser.add_argument("--lr", default=2e-4, type=float, dest="lr")
         self.parser.add_argument("--batch_size", default=1, type=int, dest="batch_size")
         self.parser.add_argument("--train_continue", default="on", choices=["on", "off"], type=str, dest="train_continue")
