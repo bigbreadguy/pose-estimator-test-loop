@@ -9,7 +9,11 @@ if __name__ == "__main__":
     print("Building Test Loop")
     loop.build()
     
-    print("Strolling Test Loop")
-    loop.stroll()
+    if args.loop == "stroll":
+        print("Strolling Test Loop")
+        loop.stroll()
+    elif args.loop == "test":
+        print("Test Only")
+        loop.test()
 
     print("Done")
