@@ -104,9 +104,9 @@ class TestLoop(object):
                 if not os.path.exists(test_report_dir):
                     os.makedirs(test_report_dir)
                 
-                self.args.ckpt_dir = os.path.join(train_report_dir, "checkpoint")
-                self.args.log_dir = os.path.join(train_report_dir, "log")
-                self.args.result_dir = os.path.join(train_report_dir, "result")
+                self.args.ckpt_dir = os.path.join(test_report_dir, "checkpoint")
+                self.args.log_dir = os.path.join(test_report_dir, "log")
+                self.args.result_dir = os.path.join(test_report_dir, "result")
 
                 # Initiate test loop
                 test(args=self.args)
