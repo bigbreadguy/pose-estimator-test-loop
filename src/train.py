@@ -326,7 +326,7 @@ def test(args):
 
             for batch, data in enumerate(loader_test, 1):
                 input_data = data["image"].to(device)
-                pose_label = data["hmap"].to(device)
+                target = data["hmap"].to(device)
                 target_weight = None
 
                 # forward netP
