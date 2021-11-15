@@ -54,7 +54,6 @@ class Dataset(torch.utils.data.Dataset):
             if data_i.dtype == np.uint8:
                 data_i = data_i / 255.0
 
-            data["input"] = data_i
             data["image"] = data_i
 
         if self.data_type == "label" or self.data_type == "both":
