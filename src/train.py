@@ -127,7 +127,7 @@ def train(args):
     ## Open log file and write
     date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 
-    f = open(log_prefix + "-" + mode, "a")
+    f = open(log_prefix + "-" + mode + ".txt", "a")
     f.write(f"initiate {mode} loop : " + date_time + "\n")
 
     ## Train the Networks
@@ -308,7 +308,7 @@ def test(args):
     ## Open log file and write
     date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 
-    f = open(log_prefix + "-" + mode, "a")
+    f = open(log_prefix + "-" + mode + ".txt", "a")
     f.write(f"initiate {mode} loop : " + date_time + "\n")
 
     ## Inference
