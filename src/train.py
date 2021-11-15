@@ -333,7 +333,7 @@ def test(args):
                 output = netP(input_data)
 
                 # Build target heatmap from pose labels
-                target = nn.functional.interpolate(target, (output.size()[0], output.size()[1], output.size()[2], output.size()[3]), mode="bilinear")
+                target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="bilinear")
 
                 loss = fn_pose(output, target)
 
