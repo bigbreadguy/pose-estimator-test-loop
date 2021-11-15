@@ -128,7 +128,7 @@ def train(args):
     date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 
     f = open(log_prefix + "-" + mode + ".txt", "a")
-    f.write(f"initiate {mode} loop : " + date_time + "\n")
+    f.write("initiate %s loop : " % mode + date_time + "\n")
 
     ## Train the Networks
     st_epoch = 0
@@ -309,7 +309,7 @@ def test(args):
     date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 
     f = open(log_prefix + "-" + mode + ".txt", "a")
-    f.write(f"initiate {mode} loop : " + date_time + "\n")
+    f.write("initiate %s loop : " % mode + date_time + "\n")
 
     ## Inference
     st_epoch = 0
