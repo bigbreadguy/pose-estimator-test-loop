@@ -14,6 +14,6 @@ if __name__ == "__main__":
         loop.stroll()
     elif args.loop == "test":
         print("Test Only")
-        loop.test()
+        loop.test_stroll()
 
     print("Done")
