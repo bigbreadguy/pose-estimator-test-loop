@@ -162,7 +162,7 @@ def train(args):
                 set_requires_grad(netP, True)
                 optimP.zero_grad()
 
-                loss_P = fn_pose(output, target, target_weight)
+                loss_P = fn_pose(output, target)
                 loss_P.backward()
                 optimP.step()
 
@@ -335,7 +335,7 @@ def test(args):
                 # Build target heatmap from pose labels
                 target = nn.functional.interpolate(target, (output.size()[2], output.size()[3]), mode="nearest")
 
-                loss = fn_pose(output, target, target_weight)
+                loss = fn_pose(output, target)
 
                 # compute the losses
                 loss_P += [float(loss.item())]
