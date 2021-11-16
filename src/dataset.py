@@ -66,8 +66,15 @@ class Dataset(torch.utils.data.Dataset):
 
             data["hmap"] = data_l
 
-        if self.transform:
-            data = self.transform(data)
+        if self.transform == "3R1N":
+            transform_3R1N = transforms.Compose([Resize(shape=(286, 286, nch), num_mark=self.hm_shape[-1]),
+                                                 RandomCrop((ny, nx)),
+                                                 RandomFlip(),
+                                                 Normalization(mean=MEAN, std=STD)])
+            data = transform_3R1N(data)
+        elif self.transform == "RN":
+            transform_RN = transforms.Compose([Resize(shape=(ny, nx, nch), num_mark=self.hm_shape[-1]), Normalization(mean=MEAN, std=STD)])
+            data = transform_RN(data)
 
         data = self.to_tensor(data)
 
@@ -215,8 +222,6 @@ class RandomFlip(object):
             for key, value in data.items():
                 if key == "image" or key == "hmap":
                     data[key] = np.flip(value, axis=0)
-                elif key == "label":
-                    data[key] = np.abs(1 - value[:, 0])
 
         if hor_flip:
             # label = np.flipud(label)
@@ -226,8 +231,6 @@ class RandomFlip(object):
             for key, value in data.items():
                 if key == "image" or key == "hmap":
                     data[key] = np.flip(value, axis=1)
-                elif key == "label":
-                    data[key] = np.abs(1 - value[:, 1])
 
         # data = {"label": label, "input": input}
 
@@ -260,21 +263,21 @@ class RandomCrop(object):
     for key, value in data.items():
         if key == "image" or key == "hmap":
             data[key] = value[id_y, id_x]
-        elif key == "label":
-            empty = np.zeros_like(value)
-            empty[..., 0] = value[..., 0] - top
-            empty[..., 1] = value[..., 1] - left
-            data[key] = empty
 
     return data
 
 class Resize(object):
-    def __init__(self, shape):
+    def __init__(self, shape, num_mark):
         self.shape = shape
+        self.num_mark = num_mark
 
     def __call__(self, data):
         for key, value in data.items():
-            data[key] = resize(value, output_shape=(self.shape[0], self.shape[1],
+            if key == "image":
+                data[key] = resize(value, output_shape=(self.shape[0], self.shape[1],
                                                     self.shape[2]))
+            elif key == "hmap":
+                data[key] = resize(value, output_shape=(self.shape[0], self.shape[1],
+                                                    self.num_mark))
 
         return data

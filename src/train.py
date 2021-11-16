@@ -82,10 +82,7 @@ def train(args):
         os.makedirs(os.path.join(result_dir_train))
 
     if mode == 'train':
-        transform_train = transforms.Compose([Resize(shape=(286, 286, nch)),
-                                              RandomCrop((ny, nx)),
-                                              RandomFlip(),
-                                              Normalization(mean=MEAN, std=STD)])
+        transform_train = "3R1N" # Resize - RandomCrop - RandomFlip - Normalization
 
         dataset_full = Dataset(data_dir=os.path.join(data_dir, 'train'),
                                 transform=transform_train, hm_shape=(ny, nx, num_mark))
@@ -279,7 +276,7 @@ def test(args):
         os.makedirs(os.path.join(result_dir_test))
 
     if mode == 'test':
-        transform_test = transforms.Compose([Resize(shape=(ny, nx, nch)), Normalization(mean=MEAN, std=STD)])
+        transform_test = "RN" # Resize - Normalization
 
         dataset_test = Dataset(data_dir=os.path.join(data_dir, 'test'),
                                      transform=transform_test, hm_shape=(ny, nx, num_mark))
