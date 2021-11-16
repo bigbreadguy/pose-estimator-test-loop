@@ -112,7 +112,7 @@ class TestLoop(object):
                 test(args=self.args)
 
     def train_spec(self):
-        design = args.spec
+        design = self.args.spec
         setups_dir = os.path.join(self.datasets_dir, design)
         if os.path.exists(setups_dir):
             reports_dir = os.path.join(self.test_report_dir, design)
