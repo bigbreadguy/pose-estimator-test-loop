@@ -26,8 +26,8 @@
                 [--spec {"all" or ANY-TEST-DESIGN-NAMES}]
  ```
  </br>
-
-##### arguments explained
+ 
+##### Arguments explained
  **lr :** defines learning rate, default value is 2e-4.</br>
  **batch_size :** defines batch size, default is 4, yet 2 is recommended.</br>
  **train_continue :** defines whether the pre-trained model should be loaded or not.</br>
