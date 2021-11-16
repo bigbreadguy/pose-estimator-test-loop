@@ -16,7 +16,8 @@ import torch.nn as nn
 class JointsMSELoss(nn.Module):
     def __init__(self, use_target_weight):
         super(JointsMSELoss, self).__init__()
-        self.criterion = nn.MSELoss(size_average=True)
+        # size_average and reduce args will be deprecated, using reduction='mean' instead.
+        self.criterion = nn.MSELoss(reduction="mean")
         self.use_target_weight = use_target_weight
 
     def forward(self, output, target, target_weight=None):
