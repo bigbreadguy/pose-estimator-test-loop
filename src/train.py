@@ -16,8 +16,6 @@ from src.util import *
 import itertools
 import matplotlib.pyplot as plt
 
-from torchvision import transforms
-
 MEAN = 0.5
 STD = 0.5
 
