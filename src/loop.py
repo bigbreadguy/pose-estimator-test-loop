@@ -76,7 +76,7 @@ class TestLoop(object):
                 # Initiate test loop
                 test(args=self.args)
 
-    def test(self):
+    def test_stroll(self):
         for idx_d, design in enumerate(tqdm.tqdm(self.test_design_list)):
             setups_dir = os.path.join(self.datasets_dir, design)
             reports_dir = os.path.join(self.test_report_dir, design)
@@ -110,3 +110,34 @@ class TestLoop(object):
 
                 # Initiate test loop
                 test(args=self.args)
+
+    """
+    def train(self):
+        # Set arguments for training
+        self.vars["mode"] = "train"
+
+        self.vars["log_prefix"] = os.path.join(self.execute_log_dir, setup)
+
+        train_data_dir = os.path.join(setups_dir, setup)
+        if not os.path.exists(train_data_dir):
+            os.makedirs(train_data_dir)
+        self.vars["data_dir"] = train_data_dir
+
+        with open(os.path.join(train_data_dir, "train", "labels", "mpii_style.json"), "r", encoding="utf-8") as fread:
+            labels_dict = json.load(fread)
+            num_mark = len(labels_dict[0]["joints_vis"])
+        self.vars["num_mark"] = num_mark
+
+        num_epoch = self.args.num_epoch
+        
+        train_report_dir = os.path.join(reports_dir, design, setup)
+        if not os.path.exists(train_report_dir):
+            os.makedirs(train_report_dir)
+        
+        self.args.ckpt_dir = os.path.join(train_report_dir, "checkpoint")
+        self.args.log_dir = os.path.join(train_report_dir, "log")
+        self.args.result_dir = os.path.join(train_report_dir, "result")
+        
+        # Initiate train loop
+        train(args=self.args)
+        """

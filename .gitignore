@@ -120,3 +120,4 @@ dmypy.json
 datasets/
 test_results/
 backups/
+log/
