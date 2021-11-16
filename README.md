@@ -27,21 +27,21 @@
  ```
  </br>
 
- **lr** defines learning rate, default value is 2e-4.</br>
- **batch_size** defines batch size, default is 4, yet 2 is recommended.</br>
- **train_continue** defines whether the pre-trained model should be loaded or not.</br>
- **num_epoch** defines maximum epochs for training and just give a big number, early stopping is supported.</br>
- **ny** height-wise dimension of given images.</br>
- **nx** width-wise dimension of given images.</br>
- **nch** channel-wise dimension of given images.</br>
- **nker** base numbers of kernels in the ResNet blocks, 64 is default.</br>
- **norm** defines what kind of normalization method should be attatched</br>
+ **lr :** defines learning rate, default value is 2e-4.</br>
+ **batch_size :** defines batch size, default is 4, yet 2 is recommended.</br>
+ **train_continue :** defines whether the pre-trained model should be loaded or not.</br>
+ **num_epoch :** defines maximum epochs for training and just give a big number, early stopping is supported.</br>
+ **ny :** height-wise dimension of given images.</br>
+ **nx :** width-wise dimension of given images.</br>
+ **nch :** channel-wise dimension of given images.</br>
+ **nker :** base numbers of kernels in the ResNet blocks, 64 is default.</br>
+ **norm :** defines what kind of normalization method should be attatched</br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bnorm : batch normalization,</br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inorm : instance normalization.</br>
- **network** defines the network that will be served as pose estimator.</br>
- **resnet_depth** defines how many layers the ResNet will have.</br>
- **cuda** you can select the device with this argument.</br>
- **spec** an optional argument for re-try a train loop for designated test setting.</br>
+ **network :** defines the network that will be served as pose estimator.</br>
+ **resnet_depth :** defines how many layers the ResNet will have.</br>
+ **cuda :** you can select the device with this argument.</br>
+ **spec :** an optional argument for re-try a train loop for designated test setting.</br>
 
 ### 4. The test loop will stroll along test settings as shown
  ![test_setting](https://user-images.githubusercontent.com/50568142/139358656-a96e7546-9260-41de-91a3-a5605d53c55a.png)
