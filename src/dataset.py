@@ -11,11 +11,12 @@ from src.util import *
 
 ## Implement the DataLoader
 class Dataset(torch.utils.data.Dataset):
-    def __init__(self, data_dir, transform=None, data_type="both"):
+    def __init__(self, data_dir, transform=None, data_type="both", shape=(4,3,256,256)):
         self.data_dir_i = os.path.join(data_dir, "images")
         self.data_dir_l = os.path.join(data_dir, "labels")
         self.transform = transform
         self.data_type = data_type
+        self.shape = shape
 
         # Updated at Oct 27 2021
         self.to_tensor = ToTensor()
@@ -58,7 +59,7 @@ class Dataset(torch.utils.data.Dataset):
 
         if self.data_type == "label" or self.data_type == "both":
             l_indexes = np.array(self.dict_l[index]["joints"], dtype=np.int8)
-            data_l = np.zeros_like(data_i)
+            data_l = np.zeros(self.shape)
             channels = data_l.shape[-1]
             for channel in range(channels):
                 data_l[l_indexes[0],l_indexes[1],channel] = self.dict_l[index]["joints_vis"][channel]
