@@ -11,13 +11,17 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 from src.util import *
 
+MEAN = 0.5
+STD = 0.5
+
 ## Implement the DataLoader
 class Dataset(torch.utils.data.Dataset):
-    def __init__(self, data_dir, transform=None, data_type="both", hm_shape=(256,256,3)):
+    def __init__(self, data_dir, transform=None, data_type="both", shape=(256,256,3), hm_shape=(256,256,3)):
         self.data_dir_i = os.path.join(data_dir, "images")
         self.data_dir_l = os.path.join(data_dir, "labels")
         self.transform = transform
         self.data_type = data_type
+        self.shape = shape
         self.hm_shape = hm_shape
 
         # Updated at Oct 27 2021
@@ -69,13 +73,13 @@ class Dataset(torch.utils.data.Dataset):
             data["hmap"] = data_l
 
         if self.transform == "3R1N":
-            transform_3R1N = transforms.Compose([Resize(shape=(286, 286, nch), num_mark=self.hm_shape[-1]),
-                                                 RandomCrop((ny, nx)),
+            transform_3R1N = transforms.Compose([Resize(shape=(self.shape[0]+30, self.shape[1]+30, self.shape[-1]), num_mark=self.hm_shape[-1]),
+                                                 RandomCrop((self.shape[0], self.shape[1])),
                                                  RandomFlip(),
                                                  Normalization(mean=MEAN, std=STD)])
             data = transform_3R1N(data)
         elif self.transform == "RN":
-            transform_RN = transforms.Compose([Resize(shape=(ny, nx, nch), num_mark=self.hm_shape[-1]), Normalization(mean=MEAN, std=STD)])
+            transform_RN = transforms.Compose([Resize(shape=self.shape, num_mark=self.hm_shape[-1]), Normalization(mean=MEAN, std=STD)])
             data = transform_RN(data)
 
         data = self.to_tensor(data)

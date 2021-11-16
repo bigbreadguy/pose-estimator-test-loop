@@ -83,7 +83,7 @@ def train(args):
         transform_train = "3R1N" # Resize - RandomCrop - RandomFlip - Normalization
 
         dataset_full = Dataset(data_dir=os.path.join(data_dir, 'train'),
-                                transform=transform_train, hm_shape=(ny, nx, num_mark))
+                                transform=transform_train, shape=(ny, nx, nch), hm_shape=(ny, nx, num_mark))
         
         # Set Other Variables 
         num_data = len(dataset_full)
@@ -277,7 +277,7 @@ def test(args):
         transform_test = "RN" # Resize - Normalization
 
         dataset_test = Dataset(data_dir=os.path.join(data_dir, 'test'),
-                                     transform=transform_test, hm_shape=(ny, nx, num_mark))
+                                     transform=transform_test, shape=(ny, nx, nch), hm_shape=(ny, nx, num_mark))
 
         loader_test = DataLoader(dataset_test,
                                     batch_size=batch_size,
