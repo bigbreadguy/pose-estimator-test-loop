@@ -421,6 +421,8 @@ class opts():
         self.parser.add_argument("--joint_weight", default=False, type=bool, dest="joint_weight")
 
         self.parser.add_argument("--cuda", default="cuda", choices=["cuda", "cuda:0", "cuda:1"], type=str, dest="cuda")
+
+        self.parser.add_argument("--spec", default="all", type=str, dest="spec")
     
     def parse(self, args = ""):
         if args == "":
