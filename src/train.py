@@ -88,7 +88,7 @@ def train(args):
                                               Normalization(mean=MEAN, std=STD)])
 
         dataset_full = Dataset(data_dir=os.path.join(data_dir, 'train'),
-                                transform=transform_train)
+                                transform=transform_train, hm_shape=(batch_size, num_mark, ny, nx))
         
         # Set Other Variables 
         num_data = len(dataset_full)
@@ -158,13 +158,9 @@ def train(args):
                 # Build target heatmap from pose labels
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
-                print(f"!!!!{output.size()}!!!!")
-
                 scale_factor = (output.size()[2]/target.size()[2], output.size()[3]/target.size()[3])
                 resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
                 target = resample(target)
-
-                print(f"!!!!{target.size()}!!!!")
 
                 # backward netP
                 set_requires_grad(netP, True)
@@ -284,7 +280,7 @@ def test(args):
         transform_test = transforms.Compose([Resize(shape=(ny, nx, nch)), Normalization(mean=MEAN, std=STD)])
 
         dataset_test = Dataset(data_dir=os.path.join(data_dir, 'test'),
-                                     transform=transform_test)
+                                     transform=transform_test, hm_shape=(batch_size, num_mark, ny, nx))
 
         loader_test = DataLoader(dataset_test,
                                     batch_size=batch_size,
@@ -343,13 +339,10 @@ def test(args):
                 # Build target heatmap from pose labels
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
-                print(f"!!!!{output.size()}!!!!")
 
                 scale_factor = (output.size()[2]/target.size()[2], output.size()[3]/target.size()[3])
                 resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
                 target = resample(target)
-
-                print(f"!!!!{target.size()}!!!!")
 
                 loss = fn_pose(output, target)
 
