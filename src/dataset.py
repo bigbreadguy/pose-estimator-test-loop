@@ -16,7 +16,7 @@ class Dataset(torch.utils.data.Dataset):
         self.data_dir_l = os.path.join(data_dir, "labels")
         self.transform = transform
         self.data_type = data_type
-        self.shape = shape
+        self.hm_shape = hm_shape
 
         # Updated at Oct 27 2021
         self.to_tensor = ToTensor()
@@ -59,7 +59,7 @@ class Dataset(torch.utils.data.Dataset):
 
         if self.data_type == "label" or self.data_type == "both":
             l_indexes = np.array(self.dict_l[index]["joints"], dtype=np.int8)
-            data_l = np.zeros(self.shape)
+            data_l = np.zeros(self.hm_shape)
             channels = data_l.shape[-1]
             for channel in range(channels):
                 data_l[l_indexes[0],l_indexes[1],channel] = self.dict_l[index]["joints_vis"][channel]
