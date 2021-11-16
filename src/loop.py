@@ -42,7 +42,7 @@ class TestLoop(object):
                 # Set arguments for training
                 self.vars["mode"] = "train"
 
-                self.vars["log_prefix"] = os.path.join(self.execute_log_dir, setup)
+                self.vars["log_prefix"] = os.path.join(self.execute_log_dir, design, setup)
 
                 train_data_dir = os.path.join(setups_dir, setup)
                 if not os.path.exists(train_data_dir):
@@ -56,7 +56,7 @@ class TestLoop(object):
 
                 num_epoch = self.args.num_epoch
                 
-                train_report_dir = os.path.join(reports_dir, design, setup)
+                train_report_dir = os.path.join(reports_dir, setup)
                 if not os.path.exists(train_report_dir):
                     os.makedirs(train_report_dir)
                 
@@ -86,7 +86,7 @@ class TestLoop(object):
                 # Set arguments for training
                 self.vars["mode"] = "test"
 
-                self.vars["log_prefix"] = os.path.join(self.execute_log_dir, setup)
+                self.vars["log_prefix"] = os.path.join(self.execute_log_dir, design, setup)
 
                 train_data_dir = os.path.join(setups_dir, setup)
                 if not os.path.exists(train_data_dir):
@@ -100,7 +100,7 @@ class TestLoop(object):
 
                 num_epoch = self.args.num_epoch
                 
-                test_report_dir = os.path.join(reports_dir, design, setup)
+                test_report_dir = os.path.join(reports_dir, setup)
                 if not os.path.exists(test_report_dir):
                     os.makedirs(test_report_dir)
                 
@@ -124,7 +124,7 @@ class TestLoop(object):
                 # Set arguments for training
                 self.vars["mode"] = "train"
 
-                self.vars["log_prefix"] = os.path.join(self.execute_log_dir, setup)
+                self.vars["log_prefix"] = os.path.join(self.execute_log_dir, design, setup)
 
                 train_data_dir = os.path.join(setups_dir, setup)
                 if not os.path.exists(train_data_dir):
@@ -138,7 +138,7 @@ class TestLoop(object):
 
                 num_epoch = self.args.num_epoch
                 
-                train_report_dir = os.path.join(reports_dir, design, setup)
+                train_report_dir = os.path.join(reports_dir, setup)
                 if not os.path.exists(train_report_dir):
                     os.makedirs(train_report_dir)
                 
