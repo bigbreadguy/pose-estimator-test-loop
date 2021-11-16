@@ -1,5 +1,5 @@
 # Equipment Pose Estimator Test Loop
- ![test_loop](https://user-images.githubusercontent.com/50568142/139358613-e8dd6902-0d30-4183-9b1e-81e4a9967385.png)</br>
+ ![test_loop](https://user-images.githubusercontent.com/50568142/142012721-aae368d6-1160-437a-b190-01b6b9705fea.png)</br>
  A test loop that trains and evaluates models along preset test settings procedurally.</br>
 
 ## Getting started
@@ -45,4 +45,4 @@
  **spec :** an optional argument for re-try a train loop for designated test setting.</br>
 
 ### 4. The test loop will stroll along test settings as shown
- ![test_setting](https://user-images.githubusercontent.com/50568142/139358656-a96e7546-9260-41de-91a3-a5605d53c55a.png)
+ ![test_setting](https://user-images.githubusercontent.com/50568142/142012733-42e9cf32-2f75-43d1-92dc-e85a53b1a63c.png)
