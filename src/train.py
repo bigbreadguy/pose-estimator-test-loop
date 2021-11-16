@@ -156,7 +156,12 @@ def train(args):
                 output = netP(input_data)
 
                 # Build target heatmap from pose labels
-                target = nn.functional.interpolate(target, (output.size()[2], output.size()[3]), mode="nearest") 
+                # try interpolation - deprecated
+                # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
+                
+                scale_factor = (output.size()[2], output.size()[3]) / (target.size()[2], target.size()[3])
+                resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
+                target = resample(target)
 
                 # backward netP
                 set_requires_grad(netP, True)
@@ -333,7 +338,12 @@ def test(args):
                 output = netP(input_data)
 
                 # Build target heatmap from pose labels
-                target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
+                # try interpolation - deprecated
+                # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
+                
+                scale_factor = (output.size()[2], output.size()[3]) / (target.size()[2], target.size()[3])
+                resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
+                target = resample(target)
 
                 loss = fn_pose(output, target)
 
