@@ -54,24 +54,30 @@ def train(args):
     cuda = args.cuda
     device = torch.device(cuda if torch.cuda.is_available() else 'cpu')
 
-    print("mode: %s" % mode)
-    print("norm: %s" % norm)
 
-    print("learning rate: %.4e" % lr)
-    print("batch size: %d" % batch_size)
-    print("number of epoch: %d" % num_epoch)
+    ## Open log file and write
+    date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+    f = open(log_prefix + "-" + mode + ".txt", "a")
+    f.write("initiate %s loop : " % mode + date_time + "\n")
 
-    print("task: %s" % task)
-    print("number of markers: %s" % num_mark)
+    f.write("mode: %s" % mode)
+    f.write("norm: %s" % norm)
 
-    print("network: %s" % network)
+    f.write("learning rate: %.4e" % lr)
+    f.write("batch size: %d" % batch_size)
+    f.write("number of epoch: %d" % num_epoch)
+    
+    f.write("task: %s" % task)
+    f.write("number of markers: %s" % num_mark)
 
-    print("data dir: %s" % data_dir)
-    print("ckpt dir: %s" % ckpt_dir)
-    print("log dir: %s" % log_dir)
-    print("result dir: %s" % result_dir)
+    f.write("network: %s" % network)
 
-    print("device: %s" % device)
+    f.write("data dir: %s" % data_dir)
+    f.write("ckpt dir: %s" % ckpt_dir)
+    f.write("log dir: %s" % log_dir)
+    f.write("result dir: %s" % result_dir)
+
+    f.write("device: %s" % device)
 
     ## Create Result Directories
     result_dir_train = os.path.join(result_dir, 'train')
@@ -118,12 +124,6 @@ def train(args):
 
     ## Set SummaryWriter for the Tensorboard
     writer_train = SummaryWriter(log_dir=os.path.join(log_dir, 'train'))
-
-    ## Open log file and write
-    date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-
-    f = open(log_prefix + "-" + mode + ".txt", "a")
-    f.write("initiate %s loop : " % mode + date_time + "\n")
 
     ## Train the Networks
     st_epoch = 0
@@ -246,24 +246,30 @@ def test(args):
     cuda = args.cuda
     device = torch.device(cuda if torch.cuda.is_available() else 'cpu')
 
-    print("mode: %s" % mode)
-    print("norm: %s" % norm)
+    ## Open log file and write
+    date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 
-    print("learning rate: %.4e" % lr)
-    print("batch size: %d" % batch_size)
-    print("number of epoch: %d" % num_epoch)
+    f = open(log_prefix + "-" + mode + ".txt", "a")
+    f.write("initiate %s loop : " % mode + date_time + "\n")
 
-    print("task: %s" % task)
-    print("number of markers: %s" % num_mark)
+    f.write("mode: %s" % mode)
+    f.write("norm: %s" % norm)
 
-    print("network: %s" % network)
+    f.write("learning rate: %.4e" % lr)
+    f.write("batch size: %d" % batch_size)
+    f.write("number of epoch: %d" % num_epoch)
 
-    print("data dir: %s" % data_dir)
-    print("ckpt dir: %s" % ckpt_dir)
-    print("log dir: %s" % log_dir)
-    print("result dir: %s" % result_dir)
+    f.write("task: %s" % task)
+    f.write("number of markers: %s" % num_mark)
 
-    print("device: %s" % device)
+    f.write("network: %s" % network)
+
+    f.write("data dir: %s" % data_dir)
+    f.write("ckpt dir: %s" % ckpt_dir)
+    f.write("log dir: %s" % log_dir)
+    f.write("result dir: %s" % result_dir)
+
+    f.write("device: %s" % device)
 
     ## Create Result Directories
     result_dir_test = os.path.join(result_dir, 'test')
@@ -303,12 +309,6 @@ def test(args):
 
     ## Set SummaryWriter for the Tensorboard
     writer_test = SummaryWriter(log_dir=os.path.join(log_dir, 'test'))
-
-    ## Open log file and write
-    date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-
-    f = open(log_prefix + "-" + mode + ".txt", "a")
-    f.write("initiate %s loop : " % mode + date_time + "\n")
 
     ## Inference
     st_epoch = 0
