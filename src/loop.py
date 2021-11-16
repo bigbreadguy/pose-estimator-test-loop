@@ -22,15 +22,20 @@ class TestLoop(object):
 
         test_design_list = os.listdir(datasets_dir)
         self.test_design_list = test_design_list
+        
+        self.execute_log_dir = os.path.join(cwd, "log")
+        if not os.path.exists(self.execute_log_dir):
+            os.makedirs(self.execute_log_dir)
+        
         if len(test_design_list) > 0:
             for idx, design in enumerate(tqdm.tqdm(test_design_list)):
                 report_dir = os.path.join(test_report_dir, design)
                 if not os.path.exists(report_dir):
                     os.makedirs(report_dir)
-        
-        self.execute_log_dir = os.path.join(cwd, "log")
-        if not os.path.exists(self.execute_log_dir):
-            os.makedirs(self.execute_log_dir)
+                
+                log_dir = os.path.join(self.execute_log_dir, design)
+                if not os.path.exists(log_dir):
+                    os.makedirs(log_dir)
     
     def stroll(self):
         for idx_d, design in enumerate(tqdm.tqdm(self.test_design_list)):
