@@ -6,6 +6,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from torchvision import transforms
+
 import matplotlib.pyplot as plt
 from src.util import *
 
