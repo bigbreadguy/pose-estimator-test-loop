@@ -159,7 +159,7 @@ def train(args):
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
                 
-                scale_factor = (output.size()[2], output.size()[3]) / (target.size()[2], target.size()[3])
+                scale_factor = (output.size()[2]/target.size()[2], output.size()[3]/target.size()[3])
                 resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
                 target = resample(target)
 
@@ -341,7 +341,7 @@ def test(args):
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
                 
-                scale_factor = (output.size()[2], output.size()[3]) / (target.size()[2], target.size()[3])
+                scale_factor = (output.size()[2]/target.size()[2], output.size()[3]/target.size()[3])
                 resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
                 target = resample(target)
 
