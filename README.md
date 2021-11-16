@@ -17,22 +17,20 @@
 
 ### 3. Run the script
  ```
- python main.py [--lr {FLOAT}}] [--batch_size {INT}] [--base_epoch {INT}]
-                [--epoch_d {INT}] [--epoch_steps {INT}] [--task {"pose estimation"}]
+ python main.py [--loop {"stroll, test"}]
+                [--lr {FLOAT}}] [--batch_size {INT}] [--train_continue {"on", "off}]
+                [--num_epoch {INT}] [--task {"pose estimation"}]
                 [--ny {INT}] [--nx {INT}] [--nch {INT}] [--nker {INT}]
                 [--norm {"inorm", "bnorm"}] [--network {"PoseResNet"}]
                 [--resnet_depth {18, 34, 50, 101, 152}] [--cuda {"cuda", "cuda:0", "cuda:1"}]
+                [--spec {"all" or ANY-TEST-DESIGN-NAMES}]
  ```
  </br>
 
  **lr** defines learning rate, default value is 2e-4.</br>
  **batch_size** defines batch size, default is 4, yet 2 is recommended.</br>
- 
- **These 3 arguments defines grid search settings for the epochs.**</br>
- **base_epoch** defines very first epoch grid, the test loop will train the model until it reaches the value.</br>
- **epoch_d** defines displacement between the grids.</br>
- **epoch_steps** defines how many grids will be set.</br>
-
+ **train_continue** defines whether the pre-trained model should be loaded or not.</br>
+ **num_epoch** defines maximum epochs for training and just give a big number, early stopping is supported.</br>
  **ny** height-wise dimension of given images.</br>
  **nx** width-wise dimension of given images.</br>
  **nch** channel-wise dimension of given images.</br>
@@ -43,6 +41,7 @@
  **network** defines the network that will be served as pose estimator.</br>
  **resnet_depth** defines how many layers the ResNet will have.</br>
  **cuda** you can select the device with this argument.</br>
+ **spec** an optional argument for re-try a train loop for designated test setting.</br>
 
 ### 4. The test loop will stroll along test settings as shown
  ![test_setting](https://user-images.githubusercontent.com/50568142/139358656-a96e7546-9260-41de-91a3-a5605d53c55a.png)
