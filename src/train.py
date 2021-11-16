@@ -157,8 +157,6 @@ def train(args):
                 resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
                 target = resample(target)
 
-                print(f"out : {output.size()}, tar : {target.size()}")
-
                 # backward netP
                 set_requires_grad(netP, True)
                 optimP.zero_grad()
