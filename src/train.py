@@ -12,6 +12,7 @@ from src.loss import JointsMSELoss
 from src.model import *
 from src.dataset import *
 from src.util import *
+from src.evaluate import *
 
 import itertools
 import matplotlib.pyplot as plt
@@ -412,3 +413,104 @@ def test(args):
     
     writer_test.close()
     f.close()
+
+def evaluate(args):
+    ## Set Hyperparameters for the Evaluation
+    mode = "test"
+
+    lr = args.lr
+    batch_size = args.batch_size
+
+    data_dir = args.data_dir
+    ckpt_dir = args.ckpt_dir
+    result_dir = args.result_dir
+
+    num_mark = args.num_mark
+
+    ny = args.ny
+    nx = args.nx
+    nch = args.nch
+    nker = args.nker
+
+    norm = args.norm
+
+    network = args.network
+    resnet_depth = args.resnet_depth
+    joint_weight = args.joint_weight
+
+    cuda = args.cuda
+    device = torch.device(cuda if torch.cuda.is_available() else 'cpu')
+
+    if mode == 'test':
+        dataset_test = Dataset(data_dir=os.path.join(data_dir, 'test'),
+                                     transform=None, shape=(ny, nx, nch), hm_shape=(ny, nx, num_mark))
+
+        loader_test = DataLoader(dataset_test,
+                                    batch_size=batch_size,
+                                    shuffle=False, num_workers=NUM_WORKER)
+
+    if network == "PoseResNet":
+        netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
+        message = init_weights(netP, init_type='normal', init_gain=0.02)
+        del message
+    
+    ## Define the Loss Functions
+    fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
+
+    ## Set the Optimizers
+    optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
+
+    ## Define Other Functions
+    fn_tonumpy = lambda x: x.to('cpu').detach().numpy()
+    fn_denorm = lambda x: (x * STD) + MEAN
+
+    ## Inference
+
+    if mode == 'test':
+        epoch, netP, optimP = load(ckpt_dir=ckpt_dir,
+                                netP=netP,
+                                optimP=optimP)
+
+        with torch.no_grad():
+            netP.eval()
+
+            evals = []
+
+            for batch, data in enumerate(loader_test, 1):
+                input_data = data["image"].to(device)
+                target = data["hmap"].to(device)
+                target_weight = None
+
+                # forward netP
+                output = netP(input_data)
+
+                # Build target heatmap from pose labels
+                scale_factor = (output.size()[2]/target.size()[2], output.size()[3]/target.size()[3])
+                resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
+                target = resample(target)
+
+                # Convert tensors to numpy arrays
+                input_data = fn_tonumpy(fn_denorm(input_data))
+                output = fn_tonumpy(fn_denorm(output))
+                target = fn_tonumpy(fn_denorm(target))
+
+                if not batch_size==1:
+                    for j in range(input_data.shape[0]):                        
+                        output_ = output[j]
+                        target_ = target[j]
+                        
+                        acc, avg_acc, cnt, pred = accuracy(output_, target_)
+
+                        evals.append({"acc" : acc.tolist(), "avg_acc" : avg_acc,
+                                      "cnt" : cnt, "pred" : pred.tolist()})
+
+                else:
+                    output_ = output
+                    target_ = target
+
+                    acc, avg_acc, cnt, pred = accuracy(output_, target_)
+
+                    evals.append({"acc" : acc.tolist(), "avg_acc" : avg_acc,
+                                  "cnt" : cnt, "pred" : pred.tolist()})
+    
+    return evals
