@@ -335,6 +335,23 @@ def patch2image(src, nimg, npatch, nmargin, datatype="tensor", type="count"):
 
     return dst
 
+def pose2image(array):
+    shape = array.shape
+    if len(shape) == 3:
+        intg = array.sum(axis=-1)
+        rpt = np.repeat(intg[..., np.newaxis], 3, axis=-1)
+        array = rpt
+
+        return array
+
+    elif len(shape) == 4:
+        for i in range(shape[0]):
+            intg = array[i,...].sum(axis=-1)
+            rpt = np.repeat(intg[..., np.newaxis], 3, axis=-1)
+            array[i,...] = rpt
+
+            return array
+
 # Early stopping for pytorch
 # Originally implemented by https://github.com/Bjarten
 # Original implementation https://github.com/Bjarten/early-stopping-pytorch
