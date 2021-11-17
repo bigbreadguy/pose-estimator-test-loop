@@ -60,24 +60,24 @@ def train(args):
     f = open(log_prefix + "-" + mode + ".txt", "a")
     f.write("initiate %s loop : " % mode + date_time + "\n")
 
-    f.write("mode: %s" % mode)
-    f.write("norm: %s" % norm)
+    f.write("mode: %s\n" % mode)
+    f.write("norm: %s\n" % norm)
 
-    f.write("learning rate: %.4e" % lr)
-    f.write("batch size: %d" % batch_size)
-    f.write("number of epoch: %d" % num_epoch)
+    f.write("learning rate: %.4e\n" % lr)
+    f.write("batch size: %d\n" % batch_size)
+    f.write("number of epoch: %d\n" % num_epoch)
     
-    f.write("task: %s" % task)
-    f.write("number of markers: %s" % num_mark)
+    f.write("task: %s\n" % task)
+    f.write("number of markers: %s\n" % num_mark)
 
-    f.write("network: %s" % network)
+    f.write("network: %s\n" % network)
 
-    f.write("data dir: %s" % data_dir)
-    f.write("ckpt dir: %s" % ckpt_dir)
-    f.write("log dir: %s" % log_dir)
-    f.write("result dir: %s" % result_dir)
+    f.write("data dir: %s\n" % data_dir)
+    f.write("ckpt dir: %s\n" % ckpt_dir)
+    f.write("log dir: %s\n" % log_dir)
+    f.write("result dir: %s\n" % result_dir)
 
-    f.write("device: %s" % device)
+    f.write("device: %s\n" % device)
 
     ## Create Result Directories
     result_dir_train = os.path.join(result_dir, 'train')
@@ -262,24 +262,24 @@ def test(args):
     f = open(log_prefix + "-" + mode + ".txt", "a")
     f.write("initiate %s loop : " % mode + date_time + "\n")
 
-    f.write("mode: %s" % mode)
-    f.write("norm: %s" % norm)
+    f.write("mode: %s\n" % mode)
+    f.write("norm: %s\n" % norm)
 
-    f.write("learning rate: %.4e" % lr)
-    f.write("batch size: %d" % batch_size)
-    f.write("number of epoch: %d" % num_epoch)
+    f.write("learning rate: %.4e\n" % lr)
+    f.write("batch size: %d\n" % batch_size)
+    f.write("number of epoch: %d\n" % num_epoch)
 
-    f.write("task: %s" % task)
-    f.write("number of markers: %s" % num_mark)
+    f.write("task: %s\n" % task)
+    f.write("number of markers: %s\n" % num_mark)
 
-    f.write("network: %s" % network)
+    f.write("network: %s\n" % network)
 
-    f.write("data dir: %s" % data_dir)
-    f.write("ckpt dir: %s" % ckpt_dir)
-    f.write("log dir: %s" % log_dir)
-    f.write("result dir: %s" % result_dir)
+    f.write("data dir: %s\n" % data_dir)
+    f.write("ckpt dir: %s\n" % ckpt_dir)
+    f.write("log dir: %s\n" % log_dir)
+    f.write("result dir: %s\n" % result_dir)
 
-    f.write("device: %s" % device)
+    f.write("device: %s\n" % device)
 
     ## Create Result Directories
     result_dir_test = os.path.join(result_dir, 'test')
@@ -383,7 +383,7 @@ def test(args):
                         writer_test.add_image('output', output_, id, dataformats='NHWC')
                         writer_test.add_image('target', target_, id, dataformats='NHWC')
 
-                        f.write("TEST: BATCH %04d / %04d | " % (id + 1, num_data_test))
+                        f.write("TEST: BATCH %04d / %04d | \n" % (id + 1, num_data_test))
                 else:
                     id = batch_size * (batch - 1) + 0
                         
@@ -409,7 +409,7 @@ def test(args):
                     writer_test.add_image('output', output_, id, dataformats='NHWC')
                     writer_test.add_image('target', target_, id, dataformats='NHWC')
 
-                    f.write("TEST: BATCH %04d / %04d | " % (id + 1, num_data_test))
+                    f.write("TEST: BATCH %04d / %04d | \n" % (id + 1, num_data_test))
 
                 writer_test.add_scalar('loss', loss_P[-1], batch)
     
