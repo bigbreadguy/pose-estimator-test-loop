@@ -349,6 +349,8 @@ def test(args):
                 output = fn_tonumpy(fn_denorm(output))
                 target = fn_tonumpy(fn_denorm(target))
 
+                print("output : %s, target : %s" % (output.shape, target.shape))
+
                 for j in range(input_data.shape[0]):
                     id = batch_size * (batch - 1) + j
                     
