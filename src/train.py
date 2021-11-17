@@ -200,7 +200,7 @@ def train(args):
                         plt.imsave(os.path.join(result_dir_train, '%04d_output.png' % id), output,
                                 cmap=cmap)
                         writer_train.add_image('input', input_data, id, dataformats='HWC')
-                        writer_train.add_image('output', input_data, id, dataformats='NHWC')
+                        writer_train.add_image('output', input_data, id, dataformats='HWC')
                     writer_train.add_scalar('loss_P', np.mean(loss_P_train), epoch)
 
                     if epoch % 10 == 0 or epoch == num_epoch:
