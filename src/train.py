@@ -108,7 +108,8 @@ def train(args):
 
     if network == "PoseResNet":
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
-        init_weights(netP, init_type='normal', init_gain=0.02)
+        message = init_weights(netP, init_type='normal', init_gain=0.02)
+        f.write(message)
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
@@ -297,7 +298,8 @@ def test(args):
 
     if network == "PoseResNet":
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
-        init_weights(netP, init_type='normal', init_gain=0.02)
+        message = init_weights(netP, init_type='normal', init_gain=0.02)
+        f.write(message)
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
