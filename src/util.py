@@ -346,9 +346,9 @@ def pose2image(array):
 
     elif len(shape) == 4:
         for i in range(shape[0]):
-            intg = array[i,...].sum(axis=-1)
+            intg = array[i, ...].sum(axis=-1)
             rpt = np.repeat(intg[..., np.newaxis], 3, axis=-1)
-            array[i,...] = rpt
+            array = np.repeat(rpt[np.newaxis, ...], shape[0], axis=0)
 
             return array
 
