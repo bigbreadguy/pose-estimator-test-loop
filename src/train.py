@@ -392,7 +392,7 @@ def test(args):
                     output_ = output
                     print(output.shape)
                     target_ = target
-                    print(target)
+                    print(target.shape)
 
                     input_data_ = np.clip(input_data_, a_min=0, a_max=1)
                     
