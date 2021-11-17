@@ -388,8 +388,11 @@ def test(args):
                     id = batch_size * (batch - 1) + 0
                         
                     input_data_ = input_data
+                    print(input_data.shape)
                     output_ = output
+                    print(output.shape)
                     target_ = target
+                    print(target)
 
                     input_data_ = np.clip(input_data_, a_min=0, a_max=1)
                     
