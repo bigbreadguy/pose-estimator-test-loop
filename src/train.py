@@ -215,7 +215,7 @@ def train(args):
                 
                 # Early stop when validation loss does not reduce
                 val_loss = fn_pose(val_output, val_target, None)
-                early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
+                early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch, trace_func=f.write)
                 
             if early_stop.early_stop:
                 break
