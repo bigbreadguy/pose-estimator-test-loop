@@ -102,8 +102,6 @@ class TestLoop(object):
                     labels_dict = json.load(fread)
                     num_mark = len(labels_dict[0]["joints_vis"])
                 self.vars["num_mark"] = num_mark
-
-                num_epoch = self.args.num_epoch
                 
                 test_report_dir = os.path.join(reports_dir, setup)
                 if not os.path.exists(test_report_dir):
