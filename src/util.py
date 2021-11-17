@@ -352,6 +352,24 @@ def pose2image(array):
 
             return array
 
+def tensor2image(tensor):
+    shape = tensor.shape
+    if len(shape) == 3:
+        intg = tensor.sum(axis=0)
+        rpt = intg[None, ...].expand(-1, 3, -1, -1)
+        array = rpt
+
+        return array
+
+    elif len(shape) == 4:
+        for i in range(shape[0]):
+            intg = tensor[i, ...].sum(axis=0)
+            rpt = intg[None, ...].expand(-1, 3, -1, -1)
+            array = rpt[None, ...].expand(shape[0], -1, -1, -1)
+
+            return array
+
+
 # Early stopping for pytorch
 # Originally implemented by https://github.com/Bjarten
 # Original implementation https://github.com/Bjarten/early-stopping-pytorch
