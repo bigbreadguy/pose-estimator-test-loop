@@ -392,15 +392,12 @@ def test(args):
                     target_ = target
 
                     input_data_ = np.clip(input_data_, a_min=0, a_max=1)
-                    print(input_data_.shape)
 
                     # Convert pose heatmaps into image form
                     output_ = pose2image(output_)
                     output_ = np.clip(output_, a_min=0, a_max=1)
-                    print(output_.shape)
                     target_ = pose2image(target_)
                     target_ = np.clip(target_, a_min=0, a_max=1)
-                    print(target_.shape)
 
                     plt.imsave(os.path.join(result_dir_test, '%04d_input.png' % id), input_data_)
                     plt.imsave(os.path.join(result_dir_test, '%04d_output.png' % id), output_)
