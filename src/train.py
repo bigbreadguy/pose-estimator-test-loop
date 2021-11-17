@@ -380,7 +380,9 @@ def test(args):
                         plt.imsave(os.path.join(result_dir_test, '%04d_output.png' % id), output_)
                         plt.imsave(os.path.join(result_dir_test, '%04d_target.png' % id), target_)
                         writer_test.add_image('input', input_data, id, dataformats='NHWC')
+                        output = tensor2image(output)
                         writer_test.add_image('output', output, id, dataformats='NHWC')
+                        target = tensor2image(target)
                         writer_test.add_image('target', target, id, dataformats='NHWC')
 
                         f.write("TEST: BATCH %04d / %04d | " % (id + 1, num_data_test))
@@ -403,8 +405,10 @@ def test(args):
                     plt.imsave(os.path.join(result_dir_test, '%04d_output.png' % id), output_)
                     plt.imsave(os.path.join(result_dir_test, '%04d_target.png' % id), target_)
                     writer_test.add_image('input', input_data, id, dataformats='NHWC')
-                    writer_test.add_image('output', output, id, dataformats='HWC')
-                    writer_test.add_image('target', target, id, dataformats='HWC')
+                    output = tensor2image(output)
+                    writer_test.add_image('output', output, id, dataformats='NHWC')
+                    target = tensor2image(target)
+                    writer_test.add_image('target', target, id, dataformats='NHWC')
 
                     f.write("TEST: BATCH %04d / %04d | " % (id + 1, num_data_test))
 
