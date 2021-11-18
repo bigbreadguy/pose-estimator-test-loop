@@ -372,9 +372,9 @@ def test(args):
                         input_data_ = np.clip(input_data_, a_min=0, a_max=1)
                         
                         # Convert pose heatmaps into image form
-                        output_ = pose2image(output_)
+                        output_ = reshape2image(output_)
                         output_ = np.clip(output_, a_min=0, a_max=1)
-                        target_ = pose2image(target_)
+                        target_ = reshape2image(target_)
                         target_ = np.clip(target_, a_min=0, a_max=1)
 
                         plt.imsave(os.path.join(result_dir_test, '%04d_input.png' % id), input_data_)
@@ -395,9 +395,9 @@ def test(args):
                     input_data_ = np.clip(input_data_, a_min=0, a_max=1)
 
                     # Convert pose heatmaps into image form
-                    output_ = pose2image(output_)
+                    output_ = reshape2image(output_)
                     output_ = np.clip(output_, a_min=0, a_max=1)
-                    target_ = pose2image(target_)
+                    target_ = reshape2image(target_)
                     target_ = np.clip(target_, a_min=0, a_max=1)
 
                     plt.imsave(os.path.join(result_dir_test, '%04d_input.png' % id), input_data_)
@@ -423,7 +423,6 @@ def evaluate(args):
 
     data_dir = args.data_dir
     ckpt_dir = args.ckpt_dir
-    result_dir = args.result_dir
 
     num_mark = args.num_mark
 
