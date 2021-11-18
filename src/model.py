@@ -55,11 +55,17 @@ class PoseResNet(nn.Module):
 
         is_basic, spec, num_dec = arch_settings[num_layers]
             
-        self.enc = CBR2d(in_channels, nker, kernel_size=3, stride=1, padding=1, bias=True, norm=None, relu=0.0)
+        self.enc = CBR2d(in_channels, nker, kernel_size=3, stride=2, padding=1, bias=True, norm=None, relu=0.0)
+
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
         res = []
 
         for i, nblk in enumerate(spec):
+            if i==0:
+                stride=1
+            else:
+                stride=2
             for j in range(nblk):
                 base_nker = nker*2**i
                 if j > 0:
@@ -68,7 +74,8 @@ class PoseResNet(nn.Module):
                     mult=1
                 else:
                     mult=2
-                res += [ResBlock(base_nker=base_nker, mult=mult, kernel_size=3, stride=1, padding=1, bias=True, norm=norm, relu=0.0, basic=is_basic)]        
+                res += [ResBlock(base_nker=base_nker, mult=mult, kernel_size=3, stride=stride,
+                                 padding=1, bias=True, norm=norm, relu=0.0, basic=is_basic)]        
         
         self.res = nn.Sequential(*res)
 
@@ -83,7 +90,7 @@ class PoseResNet(nn.Module):
             else:
                 dec_in_channels = 4*nker
 
-            dec += [DECBR2d(dec_in_channels, dec_out_channels, kernel_size=3, stride=1, padding=1, bias=True, norm=norm, relu=0.0)]
+            dec += [DECBR2d(dec_in_channels, dec_out_channels, kernel_size=3, stride=2, padding=1, bias=True, norm=norm, relu=0.0)]
         
         self.dec = nn.Sequential(*dec)
 
@@ -91,6 +98,7 @@ class PoseResNet(nn.Module):
 
     def forward(self, x):
         x = self.enc(x)
+        x = self.maxpool(x)
         x = self.res(x)
         x = self.dec(x)
         x = self.fc(x)
