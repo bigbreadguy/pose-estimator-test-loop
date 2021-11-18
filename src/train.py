@@ -384,7 +384,7 @@ def test(args):
                         writer_test.add_image('output', output_, id, dataformats='NHWC')
                         writer_test.add_image('target', target_, id, dataformats='NHWC')
 
-                        f.write("TEST: BATCH %04d / %04d | \n" % (id + 1, num_data_test))
+                        f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P)))
                 else:
                     id = batch_size * (batch - 1) + 0
                         
@@ -407,7 +407,7 @@ def test(args):
                     writer_test.add_image('output', output_, id, dataformats='NHWC')
                     writer_test.add_image('target', target_, id, dataformats='NHWC')
 
-                    f.write("TEST: BATCH %04d / %04d | \n" % (id + 1, num_data_test))
+                    f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P)))
 
                 writer_test.add_scalar('loss', loss_P[-1], batch)
     
