@@ -369,6 +369,28 @@ def tensor2image(tensor):
 
             return array
 
+def reshape2image(array):
+    shape = array.shape
+    if len(shape)==4:
+        if shape[0]==1:
+            array = array.reshape((shape[1],shape[2],shape[3]))
+            if shape[-1]!=3:
+                array = pose2image(array)
+            return array
+        else:
+            result = []
+            for i in range(shape[0]):
+                arr = array[i,...]
+                arr = arr.reshape((shape[1],shape[2],shape[3]))
+                if shape[-1]!=3:
+                    arr = pose2image(arr)
+                result.append(arr[np.newaxis, ...])
+            return np.concatenate(tuple(result))
+
+    elif len(shape)==3:
+        if shape[-1]!=3:
+            array = pose2image(array)
+        return array
 
 # Early stopping for pytorch
 # Originally implemented by https://github.com/Bjarten
