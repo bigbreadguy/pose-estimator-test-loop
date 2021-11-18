@@ -381,8 +381,8 @@ def test(args):
                         plt.imsave(os.path.join(result_dir_test, '%04d_output.png' % id), output_)
                         plt.imsave(os.path.join(result_dir_test, '%04d_target.png' % id), target_)
                         writer_test.add_image('input', input_data, id, dataformats='NHWC')
-                        writer_test.add_image('output', output_, id, dataformats='NHWC')
-                        writer_test.add_image('target', target_, id, dataformats='NHWC')
+                        writer_test.add_image('output', output, id, dataformats='NHWC')
+                        writer_test.add_image('target', target, id, dataformats='NHWC')
 
                         f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P)))
                 else:
@@ -404,7 +404,7 @@ def test(args):
                     plt.imsave(os.path.join(result_dir_test, '%04d_input.png' % id), input_data_)
                     plt.imsave(os.path.join(result_dir_test, '%04d_output.png' % id), output_)
                     plt.imsave(os.path.join(result_dir_test, '%04d_target.png' % id), target_)
-                    writer_test.add_image('input', input_data, id, dataformats='HWC')
+                    writer_test.add_image('input', input_data_, id, dataformats='HWC')
                     writer_test.add_image('output', output_, id, dataformats='HWC')
                     writer_test.add_image('target', target_, id, dataformats='HWC')
 
