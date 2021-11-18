@@ -392,6 +392,7 @@ def test(args):
                     output_ = output
                     target_ = target
 
+                    input_data_ = reshape2image(input_data_)
                     input_data_ = np.clip(input_data_, a_min=0, a_max=1)
 
                     # Convert pose heatmaps into image form
