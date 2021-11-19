@@ -354,7 +354,8 @@ def test(args):
                 loss = fn_pose(output, target)
 
                 # compute the losses
-                loss_P += [float(loss.item())]
+                loss_P_test = float(loss.item())
+                loss_P += [loss_P]
 
                 # Save to the Tensorboard
                 input_data = fn_tonumpy(fn_denorm(input_data))
@@ -384,7 +385,7 @@ def test(args):
                         writer_test.add_image('output', output, id, dataformats='NHWC')
                         writer_test.add_image('target', target, id, dataformats='NHWC')
 
-                        f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P)))
+                        f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P_test)))
                 else:
                     id = batch_size * (batch - 1) + 0
                         
@@ -408,7 +409,7 @@ def test(args):
                     writer_test.add_image('output', output_, id, dataformats='HWC')
                     writer_test.add_image('target', target_, id, dataformats='HWC')
 
-                    f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P)))
+                    f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P_test)))
 
                 writer_test.add_scalar('loss', loss_P[-1], batch)
     
