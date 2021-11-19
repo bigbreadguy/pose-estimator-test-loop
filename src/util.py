@@ -421,11 +421,11 @@ class AverageMeter(object):
 # Revised to be applied to the test loop
 class EarlyStopping:
     """Early stops the training if validation loss doesn't improve after a given patience."""
-    def __init__(self, patience=3, verbose=False, delta=0, ckpt_dir='./checkpoint', trace_func=print):
+    def __init__(self, patience=7, verbose=False, delta=0, ckpt_dir='./checkpoint', trace_func=print):
         """
         Args:
             patience (int): How long to wait after last time validation loss improved.
-                            Default: 3
+                            Default: 7
             verbose (bool): If True, prints a message for each validation loss improvement. 
                             Default: False
             delta (float): Minimum change in the monitored quantity to qualify as an improvement.
