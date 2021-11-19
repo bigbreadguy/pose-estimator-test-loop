@@ -65,26 +65,26 @@ class ResBlock(nn.Module):
 
             # 2nd conv
             layers += [CBR2d(in_channels=base_nker, out_channels=base_nker,
-                            kernel_size=kernel_size, stride=stride, padding=padding,
-                            bias=bias, norm=norm, relu=None)]
+                            kernel_size=kernel_size, stride=1, padding=padding,
+                            bias=bias, norm=norm, relu=relu)]
         else:
             # 1st conv
             layers += [CBR2d(in_channels=base_nker*mult, out_channels=base_nker,
-                            kernel_size=1, stride=stride, padding=0,
+                            kernel_size=1, stride=1, padding=0,
                             bias=bias, norm=norm, relu=relu)]
 
             # 2nd conv
             layers += [CBR2d(in_channels=base_nker, out_channels=base_nker,
                             kernel_size=kernel_size, stride=stride, padding=padding,
-                            bias=bias, norm=norm, relu=None)]
+                            bias=bias, norm=norm, relu=relu)]
             
             # 3rd conv
             layers += [CBR2d(in_channels=base_nker, out_channels=4*base_nker,
-                            kernel_size=1, stride=stride, padding=0,
-                            bias=bias, norm=norm, relu=None)]
+                            kernel_size=1, stride=1, padding=0,
+                            bias=bias, norm=norm, relu=relu)]
         
-        self.shortcut = nn.Conv2d(in_channels=base_nker*mult, out_channels=4*base_nker,
-                                    kernel_size=1, stride=1, padding=0)
+        self.shortcut = CBR2d(in_channels=base_nker*mult, out_channels=4*base_nker,
+                              kernel_size=1, stride=stride, padding=0, bias=False, relu=None)
         self.resblk = nn.Sequential(*layers)
 
     def forward(self, x):
