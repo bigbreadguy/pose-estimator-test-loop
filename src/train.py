@@ -135,7 +135,7 @@ def train(args):
                                 netP=netP,
                                 optimP=optimP)
         
-        early_stop = EarlyStopping(ckpt_dir=ckpt_dir)
+        early_stop = EarlyStopping(ckpt_dir=ckpt_dir, trace_func=f.write)
 
         for epoch in range(st_epoch + 1, num_epoch + 1):
             netP.train()
@@ -155,8 +155,8 @@ def train(args):
                 # Build target heatmap from pose labels
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
-                scale_factor = (output.size()[2]/target.size()[2], output.size()[3]/target.size()[3])
-                resample = nn.UpsamplingNearest2d(scale_factor=scale_factor)
+                size = (output.size()[2], output.size()[3])
+                resample = nn.UpsamplingNearest2d(size=size)
                 target = resample(target)
 
                 # backward netP
@@ -216,7 +216,7 @@ def train(args):
                 
                 # Early stop when validation loss does not reduce
                 val_loss = fn_pose(val_output, val_target, None)
-                early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch, trace_func=f.write)
+                early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
                 
             if early_stop.early_stop:
                 break
