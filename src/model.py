@@ -62,12 +62,13 @@ class PoseResNet(nn.Module):
         res = []
 
         for i, nblk in enumerate(spec):
-            if i==0:
-                stride=1
-            else:
-                stride=2
             for j in range(nblk):
-                base_nker = nker*2**i
+                if i==0 and j==0:
+                    stride=1
+                else:
+                    stride=2
+                base_nker = nker*(2**i)
+                print(f"base_nker : {base_nker}")
                 if j > 0:
                     mult=4
                 elif i == 0 :
