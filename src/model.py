@@ -69,8 +69,9 @@ class PoseResNet(nn.Module):
                     stride=2
                 else:
                     stride=1
+
                 base_nker = nker*(2**i)
-                print(f"base_nker : {base_nker}")
+                
                 if j > 0:
                     mult=4
                 elif i == 0 :
