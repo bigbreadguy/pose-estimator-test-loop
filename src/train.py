@@ -442,7 +442,7 @@ def evaluate(args):
     device = torch.device(cuda if torch.cuda.is_available() else 'cpu')
 
     if mode == 'test':
-        dataset_test = Dataset(data_dir=os.path.join(data_dir, 'test'),
+        dataset_test = Dataset(data_dir=os.path.join(data_dir, args.mode),
                                      transform=None, shape=(ny, nx, nch), hm_shape=(ny, nx, num_mark))
 
         loader_test = DataLoader(dataset_test,
