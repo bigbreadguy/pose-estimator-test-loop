@@ -354,7 +354,7 @@ def test(args):
 
                 # compute the losses
                 loss_P_test = float(loss.item())
-                loss_P += [loss_P]
+                loss_P += [loss_P_test]
 
                 # Save to the Tensorboard
                 input_data = fn_tonumpy(fn_denorm(input_data))
@@ -410,7 +410,7 @@ def test(args):
 
                     f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P_test)))
 
-                writer_test.add_scalar('loss', loss_P[-1], batch)
+                writer_test.add_scalar('loss', np.mean(loss_P), batch)
     
     writer_test.close()
     f.close()
