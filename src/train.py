@@ -8,7 +8,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from src.loss import JointsMSELoss
+from src.loss import JointsMSELoss, PCKhLoss
 from src.model import *
 from src.dataset import *
 from src.util import *
@@ -114,6 +114,7 @@ def train(args):
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
+    fn_pckh = PCKhLoss(thr=0.5).to(device)
 
     ## Set the Optimizers
     optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -140,6 +141,7 @@ def train(args):
         for epoch in range(st_epoch + 1, num_epoch + 1):
             netP.train()
             loss_P_train = []
+            loss_PCK_train = []
             val_data = next(iter(loader_val))
             val_input = val_data["image"].to(device)
             val_target = val_data["hmap"]
@@ -165,15 +167,19 @@ def train(args):
 
                 loss_P = fn_pose(output, target)
                 loss_P.backward()
+                loss_PCK, PCK_mean = fn_pckh(output, target)
+                loss_PCK.backward()
                 optimP.step()
 
                 # compute the losses
                 loss_P_train += [float(loss_P.item())]
+                loss_PCK_train += [float(loss_PCK.item())]
+                PCK_mean = float(PCK_mean)
 
                 f.write("TRAIN: EPOCH %04d / %04d | BATCH %04d / %04d | "
-                      "POSE LOSS %.8f | \n"%
+                      "POSE LOSS %.8f | PCK %.4f | \n"%
                       (epoch, num_epoch, batch, num_batch_train,
-                       np.mean(loss_P_train)))
+                       np.mean(loss_P_train), PCK_mean))
                 
                 if batch % 50 == 0:
                     # Save to the Tensorboard
@@ -203,6 +209,7 @@ def train(args):
                         writer_train.add_image('input', input_data, id, dataformats='HWC')
                         writer_train.add_image('output', input_data, id, dataformats='HWC')
                     writer_train.add_scalar('loss_P', np.mean(loss_P_train), epoch)
+                    writer_train.add_scalar('PCK', PCK_mean, epoch)
 
                     if epoch % 10 == 0 or epoch == num_epoch:
                         save(ckpt_dir=ckpt_dir, epoch=epoch,
@@ -309,6 +316,7 @@ def test(args):
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
+    fn_pckh = PCKhLoss(thr=0.5).to(device)
 
     ## Set the Optimizers
     optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -334,6 +342,7 @@ def test(args):
             netP.eval()
 
             loss_P = []
+            loss_PCK = []
 
             for batch, data in enumerate(loader_test, 1):
                 input_data = data["image"].to(device)
@@ -351,10 +360,14 @@ def test(args):
                 target = resample(target)
 
                 loss = fn_pose(output, target)
+                loss_PCK, PCK_mean = fn_pckh(output, target)
 
                 # compute the losses
                 loss_P_test = float(loss.item())
                 loss_P += [loss_P_test]
+                loss_PCK_test = float(loss_PCK.item())
+                loss_PCK += [loss_PCK_test]
+                PCK_mean = float(PCK_mean)
 
                 # Save to the Tensorboard
                 input_data = fn_tonumpy(fn_denorm(input_data))
@@ -384,7 +397,7 @@ def test(args):
                         writer_test.add_image('output', output, id, dataformats='NHWC')
                         writer_test.add_image('target', target, id, dataformats='NHWC')
 
-                        f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P_test)))
+                        f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | POSE LOSS %.4f | \n" % (id + 1, num_data_test, np.mean(loss_P_test), PCK_mean))
                 else:
                     id = batch_size * (batch - 1) + 0
                         
@@ -408,9 +421,10 @@ def test(args):
                     writer_test.add_image('output', output_, id, dataformats='HWC')
                     writer_test.add_image('target', target_, id, dataformats='HWC')
 
-                    f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P_test)))
+                    f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | POSE LOSS %.4f | \n" % (id + 1, num_data_test, np.mean(loss_P_test), PCK_mean))
 
                 writer_test.add_scalar('loss', np.mean(loss_P), batch)
+                writer_test.add_scalar('PCK', PCK_mean, batch)
     
     writer_test.close()
     f.close()
