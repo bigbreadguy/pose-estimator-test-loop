@@ -13,6 +13,10 @@ from __future__ import print_function
 
 import numpy as np
 
+def softmax(x):
+    f_x = np.exp(x) / np.sum(np.exp(x))
+    return f_x
+
 def get_max_preds(batch_heatmaps):
     '''
     get predictions from score maps
@@ -26,8 +30,8 @@ def get_max_preds(batch_heatmaps):
     num_joints = batch_heatmaps.shape[1]
     width = batch_heatmaps.shape[3]
     heatmaps_reshaped = batch_heatmaps.reshape((batch_size, num_joints, -1))
-    idx = np.argmax(heatmaps_reshaped, 2)
-    maxvals = np.amax(heatmaps_reshaped, 2)
+    idx = np.argmax(softmax(heatmaps_reshaped), 2)
+    maxvals = np.amax(softmax(heatmaps_reshaped), 2)
 
     maxvals = maxvals.reshape((batch_size, num_joints, 1))
     idx = idx.reshape((batch_size, num_joints, 1))
