@@ -14,6 +14,8 @@
  pip install -r requirements.txt
  ```
  </br>
+ **You need to install pyTorch version>=1.10.0**
+ </br>
 
 ### 3. Run the script
  ```
