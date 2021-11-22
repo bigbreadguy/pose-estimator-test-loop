@@ -115,6 +115,7 @@ def train(args):
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
     fn_pckh = PCKhLoss(thr=0.5).to(device)
+    fn_mse = nn.MSELoss(reduction="mean").to(device)
 
     ## Set the Optimizers
     optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -167,14 +168,15 @@ def train(args):
 
                 loss_P = fn_pose(output, target)
                 loss_P.backward()
-                loss_PCK, PCK_mean = fn_pckh(output, target)
+                PCKh = fn_pckh(output, target)
+                loss_PCK = fn_mse(PCKh, torch.ones_like(PCKh))
                 loss_PCK.backward()
                 optimP.step()
 
                 # compute the losses
                 loss_P_train += [float(loss_P.item())]
                 loss_PCK_train += [float(loss_PCK.item())]
-                PCK_mean = float(PCK_mean)
+                PCK_mean = float(PCKh[0])
 
                 f.write("TRAIN: EPOCH %04d / %04d | BATCH %04d / %04d | "
                       "POSE LOSS %.8f | PCK %.4f | \n"%
@@ -317,6 +319,7 @@ def test(args):
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
     fn_pckh = PCKhLoss(thr=0.5).to(device)
+    fn_mse = nn.MSELoss(reduction="mean").to(device)
 
     ## Set the Optimizers
     optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -365,9 +368,10 @@ def test(args):
                 # compute the losses
                 loss_P_test = float(loss.item())
                 loss_P += [loss_P_test]
-                loss_PCK_test = float(loss_PCK.item())
-                loss_PCK += [loss_PCK_test]
-                PCK_mean = float(PCK_mean)
+                PCKh = fn_pckh(output, target)
+                loss_pck = fn_mse(PCKh, torch.ones_like(PCKh))
+                loss_PCK += [float(loss_pck.item())]
+                PCK_mean = float(PCKh[0])
 
                 # Save to the Tensorboard
                 input_data = fn_tonumpy(fn_denorm(input_data))

@@ -42,42 +42,42 @@ class JointsMSELoss(nn.Module):
 
         return loss / num_joints
 
+def get_max_preds(batch_heatmaps):
+    '''
+    get predictions from score maps
+    heatmaps: numpy.ndarray([batch_size, num_joints, height, width])
+    '''
+    assert isinstance(batch_heatmaps, torch.Tensor), \
+        'batch_heatmaps should be numpy.ndarray'
+    assert batch_heatmaps.ndim == 4, 'batch_images should be 4-ndim'
+
+    batch_size = batch_heatmaps.shape[0]
+    num_joints = batch_heatmaps.shape[1]
+    width = batch_heatmaps.shape[3]
+    heatmaps_reshaped = batch_heatmaps.reshape((batch_size, num_joints, -1))
+    idx = torch.argmax(nn.functional.softmax(heatmaps_reshaped), 2)
+    maxvals = torch.amax(nn.functional.softmax(heatmaps_reshaped), 2)
+
+    maxvals = maxvals.reshape((batch_size, num_joints, 1))
+    idx = idx.reshape((batch_size, num_joints, 1))
+
+    preds = torch.tile(idx, (1, 1, 2))
+
+    preds[:, :, 0] = (preds[:, :, 0]) % width
+    preds[:, :, 1] = torch.floor((preds[:, :, 1]) / width)
+
+    pred_mask = torch.tile(torch.gt(maxvals, 0.0), (1, 1, 2))
+
+    preds *= pred_mask
+    return preds, maxvals
+
 class PCKhLoss(nn.Module):
     def __init__(self, thr, hm_type='gaussian'):
         super(PCKhLoss, self).__init__()
         self.thr = thr
         self.hm_type = hm_type
+        self.get_max_preds = get_max_preds
 
-        self.criterion = nn.MSELoss(reduction="mean")
-
-    def get_max_preds(batch_heatmaps):
-        '''
-        get predictions from score maps
-        heatmaps: numpy.ndarray([batch_size, num_joints, height, width])
-        '''
-        assert isinstance(batch_heatmaps, torch.Tensor), \
-            'batch_heatmaps should be numpy.ndarray'
-        assert batch_heatmaps.ndim == 4, 'batch_images should be 4-ndim'
-
-        batch_size = batch_heatmaps.shape[0]
-        num_joints = batch_heatmaps.shape[1]
-        width = batch_heatmaps.shape[3]
-        heatmaps_reshaped = batch_heatmaps.reshape((batch_size, num_joints, -1))
-        idx = torch.argmax(nn.Softmax(heatmaps_reshaped), 2)
-        maxvals = torch.amax(nn.Softmax(heatmaps_reshaped), 2)
-
-        maxvals = maxvals.reshape((batch_size, num_joints, 1))
-        idx = idx.reshape((batch_size, num_joints, 1))
-
-        preds = torch.tile(idx, (1, 1, 2))
-
-        preds[:, :, 0] = (preds[:, :, 0]) % width
-        preds[:, :, 1] = torch.floor((preds[:, :, 1]) / width)
-
-        pred_mask = torch.tile(torch.gt(maxvals, 0.0), (1, 1, 2))
-
-        preds *= pred_mask
-        return preds, maxvals
 
     def calc_dists(self, preds, target, normalize):
         """
@@ -118,8 +118,8 @@ class PCKhLoss(nn.Module):
         idx = list(range(output.shape[1]))
         norm = 1.0
         if self.hm_type == 'gaussian':
-            pred, _ = self.get_max_preds(output)
-            target, _ = self.get_max_preds(target)
+            pred, _ = self.get_max_preds(batch_heatmaps=output)
+            target, _ = self.get_max_preds(batch_heatmaps=target)
             h = output.shape[2]
             w = output.shape[3]
             norm = torch.ones((pred.shape[0], 2)) * torch.Tensor([h, w]) / 10
@@ -142,8 +142,7 @@ class PCKhLoss(nn.Module):
     
     def forward(self, output, target):
         acc, avg_acc, cnt, pred = self.accuracy(output, target)
-        grnd_t = torch.ones_like(acc)
         
-        del cnt, pred
-        
-        return (self.criterion(acc, grnd_t), avg_acc)
+        del avg_acc, cnt, pred
+
+        return acc
