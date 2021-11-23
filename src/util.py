@@ -398,8 +398,8 @@ class Resample(nn.Module):
     
     def forward(self, size, target):
         targ_size = target.size()
-        ratio_h = targ_size[2] // size[2]
-        ratio_w = targ_size[3] // size[3]
+        ratio_h = targ_size[2] // size[0]
+        ratio_w = targ_size[3] // size[1]
         resampled = nn.UpsamplingNearest2d(size=size)(torch.zeros_like(target))
         for i in range(targ_size[0]):
             for j in range(targ_size[1]):
