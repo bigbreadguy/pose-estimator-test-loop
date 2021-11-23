@@ -404,7 +404,8 @@ class Resample(nn.Module):
         for i in range(targ_size[0]):
             for j in range(targ_size[1]):
                 argmax = torch.argmax(target[i, j, :, :])
-                resampled[i, j, argmax // targ_size[3] // ratio_h, argmax % targ_size[3] // ratio_w] = 1
+                # __floordiv__ a.k.a // operator is now deprecated, torch.div(a, b, rounding_mode="floor") can replace the operator
+                resampled[i, j, torch.div(argmax, targ_size[3], rounding_mode="floor").div(ratio_h, rounding_mode="floor"), torch.div(argmax % targ_size[3], ratio_w, rounding_mode="floor")] = 1
         
         return resampled
 
