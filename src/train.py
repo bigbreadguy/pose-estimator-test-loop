@@ -114,8 +114,6 @@ def train(args):
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
-    fn_pckh = PCKhLoss(thr=0.5).to(device)
-    fn_mse = nn.MSELoss(reduction="mean").to(device)
 
     ## Set the Optimizers
     optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -142,7 +140,6 @@ def train(args):
         for epoch in range(st_epoch + 1, num_epoch + 1):
             netP.train()
             loss_P_train = []
-            loss_PCK_train = []
             val_data = next(iter(loader_val))
             val_input = val_data["image"].to(device)
             val_target = val_data["hmap"]
@@ -159,8 +156,8 @@ def train(args):
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
                 size = (output.size()[2], output.size()[3])
-                resample = nn.UpsamplingNearest2d(size=size)
-                target = resample(target)
+                fn_resample = Resample(size=size)
+                target = fn_resample(target=target)
 
                 # backward netP
                 set_requires_grad(netP, True)
@@ -168,20 +165,15 @@ def train(args):
 
                 loss_P = fn_pose(output, target)
                 loss_P.backward()
-                PCKh = fn_pckh(output, target)
-                loss_PCK = fn_mse(PCKh, torch.ones_like(PCKh))
-                loss_PCK.backward()
                 optimP.step()
 
                 # compute the losses
                 loss_P_train += [float(loss_P.item())]
-                loss_PCK_train += [float(loss_PCK.item())]
-                PCK_mean = float(PCKh[0])
 
                 f.write("TRAIN: EPOCH %04d / %04d | BATCH %04d / %04d | "
-                      "POSE LOSS %.8f | PCK %.4f | \n"%
+                      "POSE LOSS %.8f | \n"%
                       (epoch, num_epoch, batch, num_batch_train,
-                       np.mean(loss_P_train), PCK_mean))
+                       np.mean(loss_P_train)))
                 
                 if batch % 50 == 0:
                     # Save to the Tensorboard
@@ -211,7 +203,6 @@ def train(args):
                         writer_train.add_image('input', input_data, id, dataformats='HWC')
                         writer_train.add_image('output', input_data, id, dataformats='HWC')
                     writer_train.add_scalar('loss_P', np.mean(loss_P_train), epoch)
-                    writer_train.add_scalar('PCK', PCK_mean, epoch)
 
                     if epoch % 10 == 0 or epoch == num_epoch:
                         save(ckpt_dir=ckpt_dir, epoch=epoch,
@@ -318,8 +309,6 @@ def test(args):
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
-    fn_pckh = PCKhLoss(thr=0.5).to(device)
-    fn_mse = nn.MSELoss(reduction="mean").to(device)
 
     ## Set the Optimizers
     optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -345,7 +334,6 @@ def test(args):
             netP.eval()
 
             loss_P = []
-            loss_PCK = []
 
             for batch, data in enumerate(loader_test, 1):
                 input_data = data["image"].to(device)
@@ -359,19 +347,14 @@ def test(args):
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
                 size = (output.size()[2], output.size()[3])
-                resample = nn.UpsamplingNearest2d(size=size)
-                target = resample(target)
+                fn_resample = Resample(size=size)
+                target = fn_resample(target=target)
 
                 loss = fn_pose(output, target)
-                loss_PCK, PCK_mean = fn_pckh(output, target)
 
                 # compute the losses
                 loss_P_test = float(loss.item())
                 loss_P += [loss_P_test]
-                PCKh = fn_pckh(output, target)
-                loss_pck = fn_mse(PCKh, torch.ones_like(PCKh))
-                loss_PCK += [float(loss_pck.item())]
-                PCK_mean = float(PCKh[0])
 
                 # Save to the Tensorboard
                 input_data = fn_tonumpy(fn_denorm(input_data))
@@ -401,7 +384,7 @@ def test(args):
                         writer_test.add_image('output', output, id, dataformats='NHWC')
                         writer_test.add_image('target', target, id, dataformats='NHWC')
 
-                        f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | POSE LOSS %.4f | \n" % (id + 1, num_data_test, np.mean(loss_P_test), PCK_mean))
+                        f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P_test)))
                 else:
                     id = batch_size * (batch - 1) + 0
                         
@@ -425,10 +408,9 @@ def test(args):
                     writer_test.add_image('output', output_, id, dataformats='HWC')
                     writer_test.add_image('target', target_, id, dataformats='HWC')
 
-                    f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | POSE LOSS %.4f | \n" % (id + 1, num_data_test, np.mean(loss_P_test), PCK_mean))
+                    f.write("TEST: BATCH %04d / %04d | POSE LOSS %.8f | \n" % (id + 1, num_data_test, np.mean(loss_P_test)))
 
                 writer_test.add_scalar('loss', np.mean(loss_P), batch)
-                writer_test.add_scalar('PCK', PCK_mean, batch)
     
     writer_test.close()
     f.close()
@@ -505,9 +487,9 @@ def evaluate(args):
                 # Build target heatmap from pose labels
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
-                size = (output.size()[2], output.size()[3])
-                resample = nn.UpsamplingNearest2d(size=size)
-                target = resample(target)
+                size = output.size()
+                fn_resample = Resample(size=size)
+                target = fn_resample(target=target)
 
                 # Convert tensors to numpy arrays
                 input_data = fn_tonumpy(fn_denorm(input_data))
@@ -518,7 +500,9 @@ def evaluate(args):
                     for j in range(input_data.shape[0]):                        
                         output_ = output[j]
                         target_ = target[j]
-                        
+
+                        print(output_.shape)
+
                         acc, avg_acc, cnt, pred = accuracy(output_, target_)
 
                         evals.append({"acc" : acc.tolist(), "avg_acc" : avg_acc,
@@ -527,6 +511,8 @@ def evaluate(args):
                 else:
                     output_ = output
                     target_ = target
+
+                    print(output_.shape)
 
                     acc, avg_acc, cnt, pred = accuracy(output_, target_)
 

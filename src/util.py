@@ -392,6 +392,21 @@ def reshape2image(array):
             array = pose2image(array)
         return array
 
+class Resample(nn.Module):
+    def __init__(self, size):
+        super(Resample, self).__init__()
+        self.resample = nn.UpsamplingNearest2d(size=size)
+    
+    def forward(self, target):
+        targ_size = target.size()
+        resampled = self.resample(target)
+        for i in range(targ_size[0]):
+            for j in range(targ_size[1]):
+                argmax = torch.argmax(target[i, j, :, :])
+                resampled[i, j, argmax // targ_size[3], argmax % targ_size[3]] = 1
+        
+        return resampled
+
 # ------------------------------------------------------------------------------
 # Copyright (c) Microsoft
 # Licensed under the MIT License.
