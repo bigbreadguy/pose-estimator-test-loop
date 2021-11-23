@@ -155,9 +155,8 @@ def train(args):
                 # Build target heatmap from pose labels
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
-                size = (output.size()[2], output.size()[3])
-                fn_resample = Resample(size=size)
-                target = fn_resample(target=target)
+                size = output.size()
+                target = Resample()(size=size, target=target)
 
                 # backward netP
                 set_requires_grad(netP, True)
@@ -346,9 +345,8 @@ def test(args):
                 # Build target heatmap from pose labels
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
-                size = (output.size()[2], output.size()[3])
-                fn_resample = Resample(size=size)
-                target = fn_resample(target=target)
+                size = output.size()
+                target = Resample()(size=size, target=target)
 
                 loss = fn_pose(output, target)
 
@@ -488,8 +486,7 @@ def evaluate(args):
                 # try interpolation - deprecated
                 # target = nn.functional.interpolate(target, (output.size()[1], output.size()[2], output.size()[3]), mode="nearest")
                 size = output.size()
-                fn_resample = Resample(size=size)
-                target = fn_resample(target=target)
+                target = Resample()(size=size, target=target)
 
                 # Convert tensors to numpy arrays
                 input_data = fn_tonumpy(fn_denorm(input_data))

@@ -393,17 +393,18 @@ def reshape2image(array):
         return array
 
 class Resample(nn.Module):
-    def __init__(self, size):
+    def __init__(self):
         super(Resample, self).__init__()
-        self.resample = nn.UpsamplingNearest2d(size=size)
     
-    def forward(self, target):
+    def forward(self, size, target):
         targ_size = target.size()
-        resampled = self.resample(target)
+        ratio_h = targ_size[2] // size[2]
+        ratio_w = targ_size[3] // size[3]
+        resampled = nn.UpsamplingNearest2d(size=size)(torch.zeros_like(target))
         for i in range(targ_size[0]):
             for j in range(targ_size[1]):
                 argmax = torch.argmax(target[i, j, :, :])
-                resampled[i, j, argmax // targ_size[3], argmax % targ_size[3]] = 1
+                resampled[i, j, argmax // targ_size[3] // ratio_h, argmax % targ_size[3] // ratio_w] = 1
         
         return resampled
 
