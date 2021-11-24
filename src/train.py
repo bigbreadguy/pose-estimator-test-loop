@@ -498,7 +498,7 @@ def evaluate(args):
                         output_ = output[j]
                         target_ = target[j]
 
-                        print(output_.shape)
+                        # print(output_.shape)
 
                         acc, avg_acc, cnt, pred = accuracy(output_, target_)
 
@@ -509,7 +509,7 @@ def evaluate(args):
                     output_ = output
                     target_ = target
 
-                    print(output_.shape)
+                    # print(output_.shape)
 
                     acc, avg_acc, cnt, pred = accuracy(output_, target_)
 
