@@ -519,7 +519,7 @@ class opts():
         self.parser.add_argument("--resnet_depth", default=50, choices=[18, 34, 50, 101, 152], type=int, dest="resnet_depth")
         self.parser.add_argument("--joint_weight", default=False, type=bool, dest="joint_weight")
 
-        self.parser.add_argument("--cuda", default="cuda", choices=["cuda", "cuda:0", "cuda:1"], type=str, dest="cuda")
+        self.parser.add_argument("--cuda", default="cuda:0", choices=["cuda", "cuda:0", "cuda:1"], type=str, dest="cuda")
 
         self.parser.add_argument("--spec", default="all", type=str, dest="spec")
     
