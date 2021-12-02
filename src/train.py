@@ -8,7 +8,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from src.loss import JointsMSELoss, PCKhLoss
+from src.loss import JointsMSELoss
 from src.model import *
 from src.dataset import *
 from src.util import *
@@ -114,6 +114,7 @@ def train(args):
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
+    fn_mse = nn.MSELoss().to(device)
 
     ## Set the Optimizers
     optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -162,7 +163,7 @@ def train(args):
                 set_requires_grad(netP, True)
                 optimP.zero_grad()
 
-                loss_P = fn_pose(output, target)
+                loss_P = 0.5 * ( fn_pose(output, target) + fn_mse(output, target) )
                 loss_P.backward()
                 optimP.step()
 
