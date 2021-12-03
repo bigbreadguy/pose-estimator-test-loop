@@ -215,7 +215,7 @@ def train(args):
                 val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest").to(device)
                 
                 # Early stop when validation loss does not reduce
-                val_loss = fn_pose(val_output, val_target, None)
+                val_loss = 0.5 * ( fn_pose(output, target) + fn_mse(output, target) )
                 early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
                 
             if early_stop.early_stop:
