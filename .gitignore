@@ -116,6 +116,12 @@ dmypy.json
 # Visual Studio project settings
 .vs/
 
+# Mac OS X metadata
+.DS_Store
+
+# Windows metadata
+thumb.db
+
 # Others
 datasets/
 test_results/
