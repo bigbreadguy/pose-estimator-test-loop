@@ -113,6 +113,71 @@ class TestLoop(object):
 
                 # Initiate test loop
                 test(args=self.args)
+    
+    def evaluations(self):
+        eval_results = {}
+        for idx_d, design in enumerate(tqdm.tqdm(self.test_design_list)):
+            setups_dir = os.path.join(self.datasets_dir, design)
+            reports_dir = os.path.join(self.test_report_dir, design)
+
+            setups_list = os.listdir(setups_dir)
+            for idx_s, setup in enumerate(setups_list):
+                # Set arguments for evaluation
+                self.vars["mode"] = "test"
+
+                test_data_dir = os.path.join(setups_dir, setup)
+                self.vars["data_dir"] = test_data_dir
+
+                with open(os.path.join(test_data_dir, "test", "labels", "mpii_style.json"), "r", encoding="utf-8") as fread:
+                    labels_dict = json.load(fread)
+                    num_mark = len(labels_dict[0]["joints_vis"])
+                self.vars["num_mark"] = num_mark
+
+                self.args.ckpt_dir = os.path.join(reports_dir, setup, "checkpoint")
+
+                # Evaluate
+                evals = evaluate(args=self.args)
+                eval_results["%s" % design+"-"+setup] = evals
+
+        save_dir = os.path.join(self.test_report_dir, f"evaluation_{self.args.mode}_dataset.json")
+        with open(save_dir, "w", encoding = "UTF-8-SIG") as file:
+            json.dump(eval_results, file, ensure_ascii=False)
+        
+        avg_acc_array = np.zeros((4, len(evals)))
+
+        for i, (key, result) in enumerate(tqdm.tqdm(eval_results.items())):
+            for j, snip in enumerate(result):
+                avg_acc = snip["avg_acc"]
+                avg_acc_array[i, j] = avg_acc
+        
+        for idx_d, design in enumerate(tqdm.tqdm(self.test_design_list)):
+            x = np.array(list(range(len(evals))))
+
+            unity_mean = np.mean(avg_acc_array[2*idx_d+1,:])
+            gan_mean = np.mean(avg_acc_array[2*idx_d,:])
+
+            plt.figure(figsize=(15, 5))
+            plt.title(f"{design}, {self.args.mode} data")
+            plt.plot(x, avg_acc_array[1,:], color="tab:blue", alpha=0.6, label="Unity")
+            plt.plot(x, avg_acc_array[0,:], color="tab:orange", alpha=0.6, label="GAN")
+            plt.axhline(y=unity_mean, color="tab:blue", alpha=1, linestyle="dotted", label=f"mean={unity_mean}")
+            plt.axhline(y=gan_mean, color="tab:orange", alpha=1, linestyle="dotted", label=f"mean={gan_mean}")
+            plt.xlabel('Data index')
+            plt.ylabel('Average accuracy')
+            plt.legend()
+            plt.imsave(os.path.join(f"{design}_{self.args.mode}.png"), dpi=300)
+
+            difference = avg_acc_array[2*idx_d+1,:] - avg_acc_array[2*idx_d,:]
+            mean_diff = np.mean(difference)
+
+            plt.figure(figsize=(15, 5))
+            plt.title(f"{self.args.mode}, {self.args.mode} data")
+            plt.plot(x, difference, color="tab:green", alpha=0.6, label="Unity - GAN")
+            plt.axhline(y=mean_diff, color="tab:green", alpha=1, linestyle="dotted", label=f"mean={mean_diff}")
+            plt.xlabel('Data index')
+            plt.ylabel('Mean accuracy difference')
+            plt.legend()
+            plt.imsave(os.path.join(f"{design}_{self.args.mode}_diff.png"), dpi=300)
 
     def train_spec(self):
         design = self.args.spec
