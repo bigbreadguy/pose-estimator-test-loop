@@ -2,6 +2,7 @@ import os
 import numpy as np
 
 import torch
+from torch import Tensor
 import torch.nn as nn
 
 from torchvision.models import resnet18, resnet34, resnet50, resnet101, resnet152
@@ -131,8 +132,7 @@ class PoseResNetv2(nn.Module):
             152: 2048,
         }
 
-        modules = [module for module in arch_settings[num_layers](pretrained=pretrained).modules() if not isinstance(module, nn.Sequential)]
-        self.enc = nn.Sequential(*modules[:-2])
+        self.resnet = arch_settings[num_layers](pretrained=pretrained)
 
         dec = []
         for i in range(2):
@@ -142,8 +142,21 @@ class PoseResNetv2(nn.Module):
 
         self.fc = CBR2d(enc_out[num_layers], out_channels, kernel_size=1, stride=1, padding=0, bias=True, norm=None, relu=None)
     
+    def _res_forward(self, x: Tensor) -> Tensor:
+        x = self.resnet.conv1(x)
+        x = self.resnet.bn1(x)
+        x = self.resnet.relu(x)
+        x = self.resnet.maxpool(x)
+
+        x = self.resnet.layer1(x)
+        x = self.resnet.layer2(x)
+        x = self.resnet.layer3(x)
+        x = self.resnet.layer4(x)
+      
+        return x
+
     def forward(self, x):
-        x = self.enc(x)
+        x = self._res_forward(x)
         x = self.dec(x)
         x = self.fc(x)
     
