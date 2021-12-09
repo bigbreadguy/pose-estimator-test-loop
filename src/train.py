@@ -459,7 +459,6 @@ def evaluate(args):
         del message
     elif network == "PoseResNetv2":
         netP = PoseResNetv2(out_channels=num_mark, num_layers=resnet_depth, pretrained=True).to(device)
-        f.write("initialize network with pretrained parameters\n")
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
