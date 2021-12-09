@@ -154,7 +154,6 @@ def train(args):
                 target_weight = None
 
                 # forward netP
-                print(input_data.shape)
                 output = netP(input_data)
 
                 # Build target heatmap from pose labels
