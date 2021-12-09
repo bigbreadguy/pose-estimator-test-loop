@@ -4,6 +4,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from torchvision.models import resnet18, resnet34, resnet50, resnet101, resnet152
+
 from src.layer import *
 
 # Deep Residual Learning for Image Recognition
@@ -107,6 +109,44 @@ class PoseResNet(nn.Module):
         x = self.dec(x)
         x = self.fc(x)
 
+        return x
+
+class PoseResNetv2(nn.Module):
+    def __init__(self, out_channels, num_layers=50, pretrained=True):
+        super(PoseResNetv2, self).__init__()
+
+        arch_settings = {
+            18: resnet18,
+            34: resnet34,
+            50: resnet50,
+            101: resnet101,
+            152: resnet152,
+        }
+
+        enc_out = {
+            18: 512,
+            34: 512,
+            50: 2048,
+            101: 2048,
+            152: 2048,
+        }
+
+        modules = [module for module in arch_settings[num_layers](pretrained=pretrained).modules() if not isinstance(module, nn.Sequential)]
+        self.enc = nn.Sequential(*modules[:-2])
+
+        dec = []
+        for i in range(2):
+            dec += [DECBR2d(enc_out[num_layers], enc_out[num_layers], kernel_size=3, stride=2, padding=1, bias=True, norm="bnorm", relu=0.0)]
+        
+        self.dec = nn.Sequential(*dec)
+
+        self.fc = CBR2d(enc_out[num_layers], out_channels, kernel_size=1, stride=1, padding=0, bias=True, norm=None, relu=None)
+    
+    def forward(self, x):
+        x = self.enc(x)
+        x = self.dec(x)
+        x = self.fc(x)
+    
         return x
 
 # Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network
