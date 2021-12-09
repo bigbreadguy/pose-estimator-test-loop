@@ -111,6 +111,9 @@ def train(args):
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
         message = init_weights(netP, init_type='normal', init_gain=0.02)
         f.write(message)
+    elif network == "PoseResNetv2":
+        netP = PoseResNetv2(out_channels=num_mark, num_layers=resnet_depth, pretrained=True).to(device)
+        f.write("initialize network with pretrained parameters\n")
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
@@ -306,6 +309,9 @@ def test(args):
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
         message = init_weights(netP, init_type='normal', init_gain=0.02)
         f.write(message)
+    elif network == "PoseResNetv2":
+        netP = PoseResNetv2(out_channels=num_mark, num_layers=resnet_depth, pretrained=True).to(device)
+        f.write("initialize network with pretrained parameters\n")
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
@@ -452,6 +458,9 @@ def evaluate(args):
         netP = PoseResNet(in_channels=nch, out_channels=num_mark, nker=nker, norm=norm, num_layers=resnet_depth).to(device)
         message = init_weights(netP, init_type='normal', init_gain=0.02)
         del message
+    elif network == "PoseResNetv2":
+        netP = PoseResNetv2(out_channels=num_mark, num_layers=resnet_depth, pretrained=True).to(device)
+        f.write("initialize network with pretrained parameters\n")
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)

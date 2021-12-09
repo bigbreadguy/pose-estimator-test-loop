@@ -515,7 +515,7 @@ class opts():
 
         self.parser.add_argument("--norm", default='inorm', type=str, dest="norm")
 
-        self.parser.add_argument("--network", default="PoseResNet", choices=["PoseResNet"], type=str, dest="network")
+        self.parser.add_argument("--network", default="PoseResNetv2", choices=["PoseResNet", "PoseResNetv2"], type=str, dest="network")
         self.parser.add_argument("--resnet_depth", default=50, choices=[18, 34, 50, 101, 152], type=int, dest="resnet_depth")
         self.parser.add_argument("--joint_weight", default=False, type=bool, dest="joint_weight")
 
