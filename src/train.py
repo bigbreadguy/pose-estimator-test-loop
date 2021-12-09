@@ -117,7 +117,6 @@ def train(args):
     
     ## Define the Loss Functions
     fn_pose = JointsMSELoss(use_target_weight=joint_weight).to(device)
-    fn_mse = nn.MSELoss().to(device)
 
     ## Set the Optimizers
     optimP = torch.optim.Adam(netP.parameters(), lr=lr, betas=(0.5, 0.999))
@@ -166,7 +165,7 @@ def train(args):
                 set_requires_grad(netP, True)
                 optimP.zero_grad()
 
-                loss_P = fn_pose(output, target) + fn_mse(output, target)
+                loss_P = fn_pose(output, target)
                 loss_P.backward()
                 optimP.step()
 
@@ -218,7 +217,7 @@ def train(args):
                 val_target = nn.functional.interpolate(val_target, (val_output.size()[2], val_output.size()[3]), mode="nearest").to(device)
                 
                 # Early stop when validation loss does not reduce
-                val_loss = fn_pose(val_output, val_target) + fn_mse(val_output, val_target)
+                val_loss = fn_pose(val_output, val_target)
                 early_stop(val_loss=val_loss, model=netP, optim=optimP, epoch=epoch)
                 
             if early_stop.early_stop:
