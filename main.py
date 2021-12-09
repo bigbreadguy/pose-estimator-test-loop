@@ -16,6 +16,10 @@ if __name__ == "__main__":
         elif args.loop == "test":
             print("Test Only")
             loop.test_stroll()
+        elif args.loop == "evaluate":
+            print("Evaluate with PCK metric")
+            loop.evaluations()
+            
     else:
         print(f"Training Designated Spec : {args.spec}")
         loop.train_spec()
