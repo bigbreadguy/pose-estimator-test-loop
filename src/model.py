@@ -113,6 +113,9 @@ class PoseResNet(nn.Module):
         return x
 
 class PoseResNetv2(nn.Module):
+    """
+    Build a pose estimation model by calling a constructor in torchvision.models subpackage.
+    """
     def __init__(self, out_channels, num_layers=50, pretrained=True):
         super(PoseResNetv2, self).__init__()
 
