@@ -19,18 +19,18 @@
 
 ### 3. Run the script
  ```
- python main.py [--loop {"stroll, test"}]
+ python main.py [--loop {"stroll, "train_test", "test", "evaluate"}]
                 [--lr {FLOAT}}] [--batch_size {INT}] [--train_continue {"on", "off}]
                 [--num_epoch {INT}] [--task {"pose estimation"}]
                 [--ny {INT}] [--nx {INT}] [--nch {INT}] [--nker {INT}]
-                [--norm {"inorm", "bnorm"}] [--network {"PoseResNet"}]
+                [--norm {"inorm", "bnorm"}] [--network {"PoseResNet", "PoseResNetv2"}]
                 [--resnet_depth {18, 34, 50, 101, 152}] [--cuda {"cuda", "cuda:0", "cuda:1"}]
                 [--spec {"all" or ANY-TEST-DESIGN-NAMES}]
  ```
  </br>
  
 ##### Arguments explained
- **loop :** stroll is recommended if you set as test, then the loop strolls for only testing.</br>
+ **loop :** stroll is recommended if you set as other settings, then the loop strolls for only the setting.</br>
  **lr :** defines learning rate, default value is 2e-4.</br>
  **batch_size :** defines batch size, default is 4, yet 2 is recommended.</br>
  **train_continue :** defines whether the pre-trained model should be loaded or not.</br>
@@ -42,7 +42,7 @@
  **norm :** defines what kind of normalization method should be attatched</br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bnorm : batch normalization,</br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inorm : instance normalization.</br>
- **network :** defines the network that will be served as pose estimator.</br>
+ **network :** defines the network that will be served as pose estimator. PoseResNetv2 initilizes the model with ImageNet pretrained parameters.</br>
  **resnet_depth :** defines how many layers the ResNet will have.</br>
  **cuda :** you can select the device with this argument.</br>
  **spec :** an optional argument for re-try a train loop for designated test setting.</br>

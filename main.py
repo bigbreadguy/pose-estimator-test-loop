@@ -11,8 +11,12 @@ if __name__ == "__main__":
     
     if args.spec == "all":
         if args.loop == "stroll":
-            print("Strolling Test Loop")
-            loop.stroll()
+            print("Strolling the Loop")
+            loop.train_test()
+            loop.evaluations()
+        elif args.loop == "train_test":
+            print("Train and Test")
+            loop.train_test()
         elif args.loop == "test":
             print("Test Only")
             loop.test_stroll()
