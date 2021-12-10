@@ -165,7 +165,7 @@ class TestLoop(object):
             plt.xlabel('Data index')
             plt.ylabel('Average accuracy')
             plt.legend()
-            plt.savefig(os.path.join(f"{design}_{self.args.mode}.png"), dpi=300)
+            plt.savefig(os.path.join(self.test_report_dir, f"{design}_{self.args.mode}.png"), dpi=300)
 
             difference = avg_acc_array[2*idx_d+1,:] - avg_acc_array[2*idx_d,:]
             mean_diff = np.mean(difference)
@@ -177,7 +177,7 @@ class TestLoop(object):
             plt.xlabel('Data index')
             plt.ylabel('Mean accuracy difference')
             plt.legend()
-            plt.savefig(os.path.join(f"{design}_{self.args.mode}_diff.png"), dpi=300)
+            plt.savefig(os.path.join(self.test_report_dir, f"{design}_{self.args.mode}_diff.png"), dpi=300)
 
     def train_spec(self):
         design = self.args.spec
